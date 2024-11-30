@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'stackoverflow.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         # Replace this value with your local database's connection string.
-        default='postgresql://postgres:postgres@localhost:5432/mysite',
+        default='postgresql://stackoverflow_qtyy_user:ZnxnpgaCjENjMfPBDDR4W3Ce0Mh0LpBx@dpg-ct59qj88fa8c73btfv30-a/stackoverflow_qtyy',
         conn_max_age=600
     )
 }
