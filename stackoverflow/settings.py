@@ -16,6 +16,7 @@ SECRET_KEY = 'django-insecure-@(=x1nwg3bi_ag9&#!u=buw!(q!zru6agl=d2@irppoar7tx^*
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+# DEBUG = True
 
 ALLOWED_HOSTS = ['stackoverflow-clone-65j7.onrender.com', '*']
 
@@ -29,6 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -110,6 +112,8 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+LOGIN_REDIRECT_URL = 'user:profile'
+LOGIN_URL = 'user:login'
 
 
 # Static files (CSS, JavaScript, Images)

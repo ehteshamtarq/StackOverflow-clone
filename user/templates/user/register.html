@@ -1,0 +1,10 @@
+<h1>Register</h1>
+<form method="POST">
+    {% csrf_token %}
+    <fieldset class="">
+      {{ form }}
+    </fieldset>
+    <div class="">
+      <button class="" type="submit">Sign Up</button>
+    </div>
+</form>

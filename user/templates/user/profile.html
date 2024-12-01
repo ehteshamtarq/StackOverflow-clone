@@ -1,0 +1,9 @@
+<h1>You can only see the profile if login</h1>
+
+
+<form action="{% url 'user:logout' %}" method="post">
+    {% csrf_token %}
+    <button type="submit" >
+      Logout
+    </button>
+</form>
