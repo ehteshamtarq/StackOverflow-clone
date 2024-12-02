@@ -57,7 +57,6 @@ nav .contain{
 
 .logout{
     border-color: #F58025;
-    outline: 0;
     background: white;
 }
 
@@ -65,20 +64,22 @@ nav .contain{
     text-decoration: none;
     font-family: 'Poppins';
     background-color: white;
-     padding: 10px;
-   border-radius: 5px;
+    padding: 10px;
+    border-radius: 5px;
     color: black;
     border: 2px solid black;
-margin-left: 10px;}
+    margin-left: 10px;
+    }
+
 *{
-font-family: 'Poppins'
+    font-family: 'Poppins'
 }
 
 
 .nav-button:hover{
-    background-color    :#F58025;
+    background-color: #F58025;
     color: white;
-    border: 2px solid #f58025
+    border: 2px solid #f58025;
 }
 
 header{
@@ -135,7 +136,7 @@ nav{
     border-radius: 4px;
 }
 
-.register-contain{
+.register-contain, .main-contain{
 margin-top: 50px;}
 
 .alert{
@@ -144,4 +145,80 @@ margin-top: 50px;}
 
 a{
 text-decoration: none !important;
+}
+
+.logout-contain{
+    margin-top: 100px;
+}
+
+.icon{
+    width: 20px !important;
+    height: 20px !important;
+}
+
+.link a{
+    display:flex;
+    flex-direction:row;
+    color: black;
+}
+
+.icon{
+margin-right: 10px;
+margin-bottom: 20px;
+}
+
+.sidebar{
+    padding-right: 20px;
+   }
+
+.link{
+    padding-right: 20px;
+   }
+
+.flex{
+    display:flex;
+    flex-direction:row;
+}
+
+.hero-section-not-auth{
+    display:flex !important;
+    flex-direction: row !important;
+}
+
+.left, .right{
+    width: 50%;
+}
+
+.right img{
+    width: 120%;
+    height: auto;
+}
+
+.right{
+    display:flex;
+    justify-content: start;
+    align-items:start;
+    }
+
+.left h2{
+    font-weight: 600;
+    font-size: 30px;
+}
+
+.left h2 span{
+    color: white !important;
+    background-color: #f58025;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-radius: 5px;
+}
+
+.left .register{
+     background-color: hsl(210,77%,46%);
+     color: white;
+     padding-left: 10px;
+     padding-right: 10px;
+     padding-top: 5px;
+     padding-bottom: 5px;
+     border-radius: 5px;
 }

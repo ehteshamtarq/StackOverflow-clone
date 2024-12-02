@@ -1,3 +1,4 @@
 myenv/
 .idea
 db.sqlite3
+questions/

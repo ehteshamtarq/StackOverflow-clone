@@ -41,7 +41,7 @@
     <header class="site-header">
       <nav>
         <div class="container contain">
-          <a href="#" >
+          <a href="{% url 'user:main' %}"  >
              {% load static %}
            <img src="{% static 'images/Stack_Overflow-Logo.png' %}" alt="Stack Overflow Logo">
         </a>
@@ -67,9 +67,6 @@
             </div>
 
           {% endif %}
-
-
-
 
         </div>
       </nav>

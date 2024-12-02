@@ -17,7 +17,7 @@ def register(request):
     return render(request, 'user/register.html', {'form': form})
 
 def base(request):
-    return render(request, 'user/base.html')
+    return render(request, 'user/main.html')
 
 @login_required
 def profile(request):

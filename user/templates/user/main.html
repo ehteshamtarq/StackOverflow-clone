@@ -1,0 +1,50 @@
+{% extends "user/base.html" %}
+{% block content %}
+    <main role="main" class="container main-contain">
+      <div class="row flex">
+        <div class="col-md-3 sidebar">
+            <div class="link">
+                <a href="#" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/home.svg' %}" alt="Home">
+                    Home
+                </a>
+            </div>
+            <div class="link">
+                <a href="#" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/question.svg' %}" alt="Questions">
+                    Questions
+                </a>
+            </div>
+            <div class="link">
+                <a href="#" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/tags.svg' %}" alt="Tags">
+                    Tags
+                </a>
+            </div>
+        </div>
+        <div class="col-md-9 mainpage">
+            {% if not user.is_authenticated %}
+            <div class="hero-section-not-auth">
+                <div class="left">
+                    <h2>
+                        Every <span class="developer">developer</span> has a tab open to Stack Overflow
+                    </h2>
+                    <p>
+                        For over 15 years we’ve been the Q&A platform of choice that millions of people visit every month to ask questions, learn, and share technical knowledge.
+                    </p>
+                      <a class="register" href="{% url 'user:register' %}">Register</a>
+                </div>
+                <div class="right">
+                    {% load static %}
+                    <img class="right-image" src="{% static 'images/right.png' %}" alt="Right Image">                </div>
+            </div>
+
+
+            {% endif %}
+        </div>
+      </div>
+    </main>
+{% endblock content %}
