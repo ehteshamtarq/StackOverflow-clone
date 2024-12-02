@@ -1,10 +1,17 @@
-<h1>Register</h1>
-<form method="POST">
+
+{% extends "user/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="register-contain">
+    <form method="POST">
     {% csrf_token %}
     <fieldset class="">
-      {{ form }}
+      {{ form | crispy}}
     </fieldset>
     <div class="">
-      <button class="" type="submit">Sign Up</button>
+      <button class="register-button" type="submit">Sign Up</button>
     </div>
 </form>
+</div>
+{% endblock content %}
+

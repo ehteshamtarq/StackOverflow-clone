@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poly:ital@0;1&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rajdhani:wght@300;400;500;600;700&family=Signika:wght@300..700&family=VT323&display=swap');
+a{
+    text-decoration: none
+}
+body {
+  background: white;
+  user-select: none;
+    padding-top: 10px;}
+img{
+    width: 200px;
+    height: auto;
+}
+ul {
+  margin: 0;
+}
+ .contain{
+    max-width: 1200px;
+}
+
+nav .contain{
+    display:flex ;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items:center;
+}
+#search{
+    padding: 10px;
+    border-radius: 5px;
+    width: 40vw;
+}
+
+.logout, .profile{
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.profile-logout{
+    padding-left: 100px;
+    display:flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.logout-form{
+    width: 200px;
+   }
+.profile:hover, .logout:hover{
+    cursor: pointer;
+}
+
+.logout:hover{
+    background-color: #F58025;
+    color: white;
+    text-decoration: none;
+}
+
+.logout{
+    border-color: #F58025;
+    outline: 0;
+    background: white;
+}
+
+.nav-button{
+    text-decoration: none;
+    font-family: 'Poppins';
+    background-color: white;
+     padding: 10px;
+   border-radius: 5px;
+    color: black;
+    border: 2px solid black;
+margin-left: 10px;}
+*{
+font-family: 'Poppins'
+}
+
+
+.nav-button:hover{
+    background-color    :#F58025;
+    color: white;
+    border: 2px solid #f58025
+}
+
+header{
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items:center;
+}
+
+nav{
+    width:90%;
+}
+
+.login-contain{
+    width: 80%;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.small-logo{
+    width: 100px;
+    padding-top: 20px;
+}
+
+.login-contain, .register-contain{
+    height: 80vh;
+    display:flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items:center;
+}
+
+
+.login-contain, form{
+    width: 400px
+}
+
+
+.row{
+    display:flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items:start;
+}
+
+.login-button, .register-button{
+    padding: 10px;
+    color: white;
+    background-color: hsl(210,77%,46%);
+    width: 100%;
+    border: none;
+    border-radius: 4px;
+}
+
+.register-contain{
+margin-top: 50px;}
+
+.alert{
+    margin-top: 30px;
+}
+
+a{
+text-decoration: none !important;
+}
