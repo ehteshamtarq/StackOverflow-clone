@@ -41,9 +41,56 @@
                     {% load static %}
                     <img class="right-image" src="{% static 'images/right.png' %}" alt="Right Image">                </div>
             </div>
-
-
             {% endif %}
+
+            {% if user.is_authenticated %}
+            <div class="hello-section">
+                <div class="hello-section-left">
+                    <div class="hello-hand">
+                    {% load static %}
+                    <img class="wave-hand" src="{% static 'images/waving-hand.png' %}" alt="Wave Hand">
+                    </div>
+                    <div class="welcome-message">
+                        <h4>Welcome back, Ehtesham Tarique</h4>
+                        <p>Find answers to your technical questions and help others answer theirs.</p>
+                    </div>
+                </div>
+                <div class="hello-section-right">
+                    <a class="ask-question" href="{% url 'user:register' %}">Ask Questions</a>
+                </div>
+
+            </div>
+            <div class="reputation-section">
+                <div class="reputation-box">
+                    <h5>Reputation</h5>
+                    <h4>0</h4>
+                    <p>Earn Reputation By Asking, Answering Questions</p>
+                </div>
+            </div>
+            <div class="interesting-post-section">
+                <h4>Latest posts</h4>
+<!--                For loop implementation-->
+                <div class="latest-post-box">
+                    <div class="votes-answer-stats">
+                        <div class="votes"> 0 votes</div>
+                        <div class="answer"> 0 answers</div>
+                    </div>
+                    <div class="post-question">
+                        <a class = "question" href="">C# Microsoft Graph API - Access Token in Forms application hangs the app</a>
+                        <p class="description">I'm able to get an access token to call API endpoints of Microsoft Graph in a C# console app. But for some reason, it doesn't work in a Forms based app. It doesn't give any exception or indication</p>
+                        <div class="tags">
+                              <a class="tags-button" href="{% url 'user:register' %}">.net</a>
+                              <a class="tags-button" href="{% url 'user:register' %}">forms</a>
+                              <a class="tags-button" href="{% url 'user:register' %}">api</a>
+                              <a class="tags-button" href="{% url 'user:register' %}">token</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            {% endif %}
+
+
         </div>
       </div>
     </main>
