@@ -51,12 +51,12 @@
                     <img class="wave-hand" src="{% static 'images/waving-hand.png' %}" alt="Wave Hand">
                     </div>
                     <div class="welcome-message">
-                        <h4>Welcome back, Ehtesham Tarique</h4>
+                        <h4>Welcome back, {{user.username}}</h4>
                         <p>Find answers to your technical questions and help others answer theirs.</p>
                     </div>
                 </div>
                 <div class="hello-section-right">
-                    <a class="ask-question" href="{% url 'user:register' %}">Ask Questions</a>
+                    <a class="ask-question" href="{% url 'questions:question_create' %}">Ask Questions</a>
                 </div>
 
             </div>

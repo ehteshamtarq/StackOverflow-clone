@@ -1,0 +1,135 @@
+{% extends "questions/base.html" %}
+
+{% block content %}
+  <h3 class="ask-question-heading">Ask a New Question</h3>
+
+  <!-- Form to create a new question -->
+<div class="question-section">
+    <div class="question-section-left">
+        <form class='question-form' method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="title">Title</label>
+        <div>Be specific and imagine you’re asking a question to another person.</div>
+      <input id="title" name="title" type="text" class="form-control" placeholder="e.g. Is there an R function for finding the index of an element in a vector?" value="{{ form.title.value|default_if_none:'' }}" />
+    </div>
+
+    <div class="form-group">
+      <label for="content">What are the details of your problem?</label>
+        <div>Introduce the problem and expand on what you put in the title. Minimum 20 characters.</div>
+      <div class="mdEdit">
+        <textarea id="content" name="content" data-provide="markdown" class="form-control" rows="10">{{ form.content.value|default_if_none:'' }}</textarea>
+      </div>
+    </div>
+
+     <div class="form-group">
+      <label>Select Tags</label>
+      {{ form.tags }}
+    </div>
+
+    <hr/>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+    </div>
+    <div class="question-section-right">
+        <div id="preview"></div>
+    </div>
+</div>
+
+<style>
+    .mdEdit {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.mdEdit textarea {
+  font-family: consolas, monospace;
+  resize: none;
+}
+
+#preview {
+  padding: 1em;
+  border: 1px solid #ccc;
+  background-color: #fefefe;
+  min-height: 100px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  word-break: break-word; /* Ensure long words break onto a new line */
+  overflow-wrap: break-word; /* Helps to break long words or URLs */
+  max-width: 100%; /* Prevents the preview from overflowing */
+}
+
+.mdEdit input, .mdEdit textarea {
+  width: 100%;
+}
+
+.submit {
+  margin-top: 20px;
+}
+
+.question-section{
+    display:flex !important;
+    flex-direction: row !important;
+    gap: 40px;
+}
+
+.question-section-left{
+    width: 50vw;
+}
+
+.question-section-right{
+    width: 35vw;
+}
+
+.title{
+    width: 100% !important;
+}
+
+.form-group, .question-form{
+    width: 100%;
+}
+
+label{
+    font-weight: 600;
+}
+
+.form-group div{
+    font-weight: 400;
+    font-size: 14px !important;
+    color: gray;
+}
+
+.inline-code {
+      font-family: 'Consolas', monospace;
+      background-color: #f1f1f1;
+      padding: 0.2em 0.4em;
+      border-radius: 4px;
+      color: #333;
+    }
+
+.code-block {
+      font-family: 'Consolas', monospace;
+      background-color: #E7E7E7;
+      color: #333;
+      padding: 3px 3px;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-x: auto;
+    }
+
+    pre {
+      margin: 0;
+      padding: 0;
+      overflow: auto;
+    }
+    .ask-question-heading{
+        margin-top: 50px;
+        margin-bottom: 50px;
+        font-weight: 700;
+    }
+
+</style>
+
+{% endblock %}

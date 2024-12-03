@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user',
+    'questions',
 ]
 
 MIDDLEWARE = [
@@ -76,10 +77,9 @@ WSGI_APPLICATION = 'stackoverflow.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
-
+#
 DATABASES = {
     'default': dj_database_url.config(
-        # Replace this value with your local database's connection string.
         default='postgresql://stackoverflow_qtyy_user:ZnxnpgaCjENjMfPBDDR4W3Ce0Mh0LpBx@dpg-ct59qj88fa8c73btfv30-a.oregon-postgres.render.com/stackoverflow_qtyy',
         conn_max_age=600
     )

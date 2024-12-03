@@ -1,0 +1,6 @@
+<h1>All Questions</h1>
+<ul>
+    {% for question in questions %}
+        <li><a href="{{ question.id }}">{{ question.title }}</a></li>
+    {% endfor %}
+</ul>
