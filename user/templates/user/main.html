@@ -2,23 +2,23 @@
 {% block content %}
     <main role="main" class="container main-contain">
       <div class="row flex">
-        <div class="col-md-3 sidebar">
+        <div class="col-md-2 sidebar">
             <div class="link">
-                <a href="#" >
+                <a href="{% url 'user:main' %}" >
                     {% load static %}
                     <img class="icon" src="{% static 'images/home.svg' %}" alt="Home">
                     Home
                 </a>
             </div>
             <div class="link">
-                <a href="#" >
+                <a href="{% url 'user:main' %}" >
                     {% load static %}
                     <img class="icon" src="{% static 'images/question.svg' %}" alt="Questions">
                     Questions
                 </a>
             </div>
             <div class="link">
-                <a href="#" >
+                <a href="{% url 'questions:tag_list' %}" >
                     {% load static %}
                     <img class="icon" src="{% static 'images/tags.svg' %}" alt="Tags">
                     Tags

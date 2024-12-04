@@ -1,19 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poly:ital@0;1&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rajdhani:wght@300;400;500;600;700&family=Signika:wght@300..700&family=VT323&display=swap');
+*{
+    outline: 0;
+}
+
 a{
     text-decoration: none
 }
+
 body {
-  background: white;
-  user-select: none;
-    padding-top: 10px;}
+    background: white;
+    user-select: none;
+    padding-top: 10px;
+}
+
 img{
     width: 200px;
     height: auto;
 }
+
 ul {
   margin: 0;
 }
- .contain{
+
+.contain{
     max-width: 1200px;
 }
 
@@ -23,6 +32,7 @@ nav .contain{
     justify-content: space-between;
     align-items:center;
 }
+
 #search{
     padding: 10px;
     border-radius: 5px;
@@ -44,7 +54,8 @@ nav .contain{
 
 .logout-form{
     width: 200px;
-   }
+}
+
 .profile:hover, .logout:hover{
     cursor: pointer;
 }
@@ -69,12 +80,11 @@ nav .contain{
     color: black;
     border: 2px solid black;
     margin-left: 10px;
-    }
+}
 
 *{
     font-family: 'Poppins'
 }
-
 
 .nav-button:hover{
     background-color: #F58025;
@@ -114,7 +124,6 @@ nav{
     align-items:center;
 }
 
-
 .login-contain, form{
     width: 400px
 }
@@ -137,14 +146,15 @@ nav{
 }
 
 .register-contain, .main-contain{
-margin-top: 50px;}
+    margin-top: 50px;
+}
 
 .alert{
     margin-top: 30px;
 }
 
 a{
-text-decoration: none !important;
+    text-decoration: none !important;
 }
 
 .logout-contain{
@@ -163,17 +173,9 @@ text-decoration: none !important;
 }
 
 .icon{
-margin-right: 10px;
-margin-bottom: 20px;
+    margin-right: 10px;
+    margin-bottom: 20px;
 }
-
-.sidebar{
-    padding-right: 20px;
-   }
-
-.link{
-    padding-right: 20px;
-   }
 
 .flex{
     display:flex;
@@ -198,7 +200,7 @@ margin-bottom: 20px;
     display:flex;
     justify-content: start;
     align-items:start;
-    }
+}
 
 .left h2{
     font-weight: 600;
@@ -231,7 +233,7 @@ margin-bottom: 20px;
 
 .wave-hand{
     width: 60px;
-  }
+}
 
 .hello-section{
     width: 100%;
@@ -293,46 +295,45 @@ margin-bottom: 20px;
     color: gray;
     font-weight: 400;
     font-size: 14px;
-
 }
 
 .interesting-post-section{
     margin-top: 50px;
     margin-bottom: 50px;
- }
+}
 
- .latest-post-box{
+.latest-post-box{
     border: 2px solid gray;
     padding: 10px;
     border-radius: 4px;
     display:flex;
     flex-direction:row;
     gap: 20px;
- }
+}
 
- .votes-answer-stats{
+.votes-answer-stats{
     width: 20%;
- }
+}
 
- .votes-answer-stats *{
+.votes-answer-stats *{
     font-size: 14px;
     color: gray;
     font-weight:400;
- }
+}
 
- .post-question a{
+.post-question a{
     font-size: 18px;
- }
+}
 
- .post-question p{
+.post-question p{
     padding-top: 10px;
     font-size: 13px;
     color: gray;
- }
+}
 
- .interesting-post-section h4{
+.interesting-post-section h4{
     margin-bottom: 50px;
- }
+}
 
 .tags-button{
     color: black;
@@ -346,4 +347,50 @@ margin-bottom: 20px;
 .tags-button:hover{
     color: black;
     background-color: #aeb7bd;
+}
+
+.heading-tags h1{
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.heading-tags p{
+    width: 650px;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.table{
+    margin-top: 50px;
+    display:flex;
+    flex-direction: row;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.tag-box{
+    padding: 10px;
+    border: 2px solid #D6D9DC;
+    border-radius: 6px;
+    width: 250px;
+}
+
+.tag-box div{
+    margin-top: 10px;
+    font-size: 11px;
+    height: 80%;
+}
+
+.tag-box a {
+    color: black;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 3px  5px;
+    border-radius: 7px;
+    background-color: #eaecee;
+    transition: 0.3s ease-in
+}
+
+.tag-box a:hover{
+    background-color: #c5cbd0;
 }

@@ -1,0 +1,47 @@
+{% extends "questions/base.html" %}
+
+{% block content %}
+<main role="main" class="container main-contain">
+      <div class="row flex">
+        <div class="col-md-2 sidebar">
+            <div class="link">
+                <a href="{% url 'user:main' %}" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/home.svg' %}" alt="Home">
+                    Home
+                </a>
+            </div>
+            <div class="link">
+                <a href="{% url 'user:main' %}" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/question.svg' %}" alt="Questions">
+                    Questions
+                </a>
+            </div>
+            <div class="link">
+                <a href="{% url 'user:main' %}" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/tags.svg' %}" alt="Tags">
+                    Tags
+                </a>
+            </div>
+        </div>
+        <div class="col-md-9 mainpage">
+            <div class="heading-tags">
+                <h1>Tags</h1>
+                <p>A tag is a keyword or label that categorizes your question with other, similar questions. Using the right tags makes it easier for others to find and answer your question.
+                </p>
+            </div>
+            <div class="table">
+                {% for tag in tags %}
+                <div class="tag-box">
+                    <a href="{{ tag.name }}">{{ tag.name }}</a>
+                    <div>{{ tag.description }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+      </div>
+    </main>
+
+{% endblock %}

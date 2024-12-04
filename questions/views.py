@@ -34,3 +34,8 @@ class QuestionCreateView(LoginRequiredMixin, CreateView):
             QuestionTag.objects.create(question=question, tag=tag)
 
         return super().form_valid(form)
+
+class TagListView(ListView):
+    model = Tag
+    template_name = 'tags/tag_list.html'
+    context_object_name = 'tags'

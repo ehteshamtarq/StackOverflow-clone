@@ -24,7 +24,7 @@
 
      <div class="form-group">
       <label>Select Tags</label>
-      {{ form.tags }}
+         {{ form.tags }}
     </div>
 
     <hr/>
@@ -121,13 +121,19 @@ label{
 
     pre {
       margin: 0;
-      padding: 0;
+      padding: 10px;
       overflow: auto;
+      background-color:  #E7E7E7;
     }
     .ask-question-heading{
         margin-top: 50px;
         margin-bottom: 50px;
         font-weight: 700;
+    }
+
+    #id_tags{
+        display:grid !important;
+        grid-template-columns: 1fr 1fr 1fr;
     }
 
 </style>
