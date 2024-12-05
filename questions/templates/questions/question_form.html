@@ -6,7 +6,7 @@
   <!-- Form to create a new question -->
 <div class="question-section">
     <div class="question-section-left">
-        <form class='question-form' method="POST">
+        <form action="{% url 'questions:question_create' %}" class='question-form' method="POST">
     {% csrf_token %}
     <div class="form-group">
       <label for="title">Title</label>
@@ -18,7 +18,7 @@
       <label for="content">What are the details of your problem?</label>
         <div>Introduce the problem and expand on what you put in the title. Minimum 20 characters.</div>
       <div class="mdEdit">
-        <textarea id="content" name="content" data-provide="markdown" class="form-control" rows="10">{{ form.content.value|default_if_none:'' }}</textarea>
+        <textarea id="content" name="body" data-provide="markdown" class="form-control" rows="10">{{ form.body.value|default_if_none:'' }}</textarea>
       </div>
     </div>
 
@@ -38,104 +38,164 @@
 
 <style>
     .mdEdit {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
+          position: relative;
+          display: flex;
+          flex-direction: column;
+        }
 
-.mdEdit textarea {
-  font-family: consolas, monospace;
-  resize: none;
-}
-
-#preview {
-  padding: 1em;
-  border: 1px solid #ccc;
-  background-color: #fefefe;
-  min-height: 100px;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  word-break: break-word; /* Ensure long words break onto a new line */
-  overflow-wrap: break-word; /* Helps to break long words or URLs */
-  max-width: 100%; /* Prevents the preview from overflowing */
-}
-
-.mdEdit input, .mdEdit textarea {
-  width: 100%;
-}
-
-.submit {
-  margin-top: 20px;
-}
-
-.question-section{
-    display:flex !important;
-    flex-direction: row !important;
-    gap: 40px;
-}
-
-.question-section-left{
-    width: 50vw;
-}
-
-.question-section-right{
-    width: 35vw;
-}
-
-.title{
-    width: 100% !important;
-}
-
-.form-group, .question-form{
-    width: 100%;
-}
-
-label{
-    font-weight: 600;
-}
-
-.form-group div{
-    font-weight: 400;
-    font-size: 14px !important;
-    color: gray;
-}
-
-.inline-code {
-      font-family: 'Consolas', monospace;
-      background-color: #f1f1f1;
-      padding: 0.2em 0.4em;
-      border-radius: 4px;
-      color: #333;
+    .mdEdit textarea {
+          font-family: consolas, monospace;
+          resize: none;
     }
 
-.code-block {
-      font-family: 'Consolas', monospace;
-      background-color: #E7E7E7;
-      color: #333;
-      padding: 3px 3px;
-      border-radius: 4px;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      overflow-x: auto;
+    #preview {
+          padding: 1em;
+          border: 1px solid #ccc;
+          background-color: #fefefe;
+          min-height: 100px;
+          white-space: pre-wrap;
+          word-wrap: break-word;
+          word-break: break-word; /* Ensure long words break onto a new line */
+          overflow-wrap: break-word; /* Helps to break long words or URLs */
+          max-width: 100%; /* Prevents the preview from overflowing */
     }
+
+    .mdEdit input, .mdEdit textarea {
+        width: 100%;
+    }
+
+    .submit {
+        margin-top: 20px;
+    }
+
+    .question-section{
+            display:flex !important;
+            flex-direction: row !important;
+            gap: 40px;
+    }
+
+    .question-section-left{
+            width: 50vw;
+    }
+
+    .question-section-right{
+            width: 35vw;
+    }
+
+    .title{
+            width: 100% !important;
+    }
+
+    .form-group, .question-form{
+            width: 100%;
+    }
+
+    label{
+        font-weight: 600;
+    }
+
+    .form-group div{
+            font-weight: 400;
+            font-size: 14px !important;
+            color: gray;
+    }
+
+    .inline-code {
+          font-family: 'Consolas', monospace;
+          background-color: #f1f1f1;
+          padding: 0.2em 0.4em;
+          border-radius: 4px;
+          color: #333;
+    }
+
+    .code-block {
+          font-family: 'Consolas', monospace;
+          background-color: #E7E7E7;
+          color: #333;
+          padding: 3px 3px;
+          border-radius: 4px;
+          white-space: pre-wrap;
+          word-wrap: break-word;
+          overflow-x: auto;
+        }
 
     pre {
-      margin: 0;
-      padding: 10px;
-      overflow: auto;
-      background-color:  #E7E7E7;
+          margin: 0;
+          padding: 10px;
+          overflow: auto;
+          background-color:  #E7E7E7;
     }
+
     .ask-question-heading{
-        margin-top: 50px;
-        margin-bottom: 50px;
-        font-weight: 700;
+            margin-top: 50px;
+            margin-bottom: 50px;
+            font-weight: 700;
     }
 
     #id_tags{
-        display:grid !important;
-        grid-template-columns: 1fr 1fr 1fr;
+            display:grid !important;
+            grid-template-columns: 1fr 1fr 1fr;
     }
 
 </style>
+<script>
+      document.addEventListener('DOMContentLoaded', function() {
+    const titleInput = document.getElementById('title');
+    const bodyTextarea = document.getElementById('content');
+    const previewDiv = document.getElementById('preview');
+
+    function parseMarkdown(text) {
+      let parsed = text;
+
+      parsed = parsed.replace(/```([\s\S]*?)```/g, '<pre><code class="code-block">$1</code></pre>');
+      parsed = parsed.replace(/^###### (.*)/gm, '<h6>$1</h6>')
+                     .replace(/^##### (.*)/gm, '<h5>$1</h5>')
+                     .replace(/^#### (.*)/gm, '<h4>$1</h4>')
+                     .replace(/^### (.*)/gm, '<h3>$1</h3>')
+                     .replace(/^## (.*)/gm, '<h2>$1</h2>')
+                     .replace(/^# (.*)/gm, '<h1>$1</h1>');
+
+      parsed = parsed.replace(/!\[([^\]]+)]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
+
+      parsed = parsed.replace(/\[([^\]]+)]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+
+      parsed = parsed.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')  // Bold
+                     .replace(/\*(.*?)\*/g, '<i>$1</i>')  // Italic
+                     .replace(/_(.*?)_/g, '<i>$1</i>')   // Italic (underscore version)
+                     .replace(/~~(.*?)~~/g, '<del>$1</del>'); // Strikethrough
+
+      parsed = parsed.replace(/`(.*?)`/g, '<code class="inline-code">$1</code>');
+      parsed = parsed.replace(/\n/g, '<br>');
+      parsed = parsed.replace(/  /g, '&nbsp;&nbsp;');
+
+      return parsed;
+    }
+
+    function updatePreview() {
+      const titleText = titleInput.value.trim();
+      const bodyText = bodyTextarea.value.trim();
+
+      let previewHtml = `<h2><b>${titleText}</b></h2>`;
+
+      previewHtml += parseMarkdown(bodyText);
+
+      previewDiv.innerHTML = previewHtml;
+    }
+
+    titleInput.addEventListener('input', updatePreview);
+    bodyTextarea.addEventListener('input', updatePreview);
+
+    updatePreview();
+  });
+
+      function autoResizeTextarea(textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+          document.getElementById('content').addEventListener('input', function() {
+      autoResizeTextarea(this);
+          });
+  </script>
+
 
 {% endblock %}

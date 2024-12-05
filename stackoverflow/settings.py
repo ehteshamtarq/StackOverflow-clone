@@ -78,6 +78,7 @@ WSGI_APPLICATION = 'stackoverflow.wsgi.application'
 #     }
 # }
 
+
 DATABASES = {
     'default': dj_database_url.config(
         default='postgresql://stackoverflow_qtyy_user:ZnxnpgaCjENjMfPBDDR4W3Ce0Mh0LpBx@dpg-ct59qj88fa8c73btfv30-a.oregon-postgres.render.com/stackoverflow_qtyy',

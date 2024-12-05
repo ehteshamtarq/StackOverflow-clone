@@ -11,7 +11,7 @@
                 </a>
             </div>
             <div class="link">
-                <a href="{% url 'user:main' %}" >
+                <a href="{% url 'questions:question_list' %}" >
                     {% load static %}
                     <img class="icon" src="{% static 'images/question.svg' %}" alt="Questions">
                     Questions
@@ -69,23 +69,25 @@
             </div>
             <div class="interesting-post-section">
                 <h4>Latest posts</h4>
-<!--                For loop implementation-->
+                {% for question in latest_questions %}
                 <div class="latest-post-box">
                     <div class="votes-answer-stats">
                         <div class="votes"> 0 votes</div>
-                        <div class="answer"> 0 answers</div>
+                        <div class="answer"> {{ question.answer_count }} answers</div>
+                        <div class="view"> {{ question.views }} views</div>
                     </div>
                     <div class="post-question">
-                        <a class = "question" href="">C# Microsoft Graph API - Access Token in Forms application hangs the app</a>
-                        <p class="description">I'm able to get an access token to call API endpoints of Microsoft Graph in a C# console app. But for some reason, it doesn't work in a Forms based app. It doesn't give any exception or indication</p>
+                        <a class = "question" href="{% url 'questions:question_detail' question.id %}">{{ question.title }}</a>
+                        <p class="description">{{ question.body_clean |slice:":200"  }}</p>
                         <div class="tags">
-                              <a class="tags-button" href="{% url 'user:register' %}">.net</a>
-                              <a class="tags-button" href="{% url 'user:register' %}">forms</a>
-                              <a class="tags-button" href="{% url 'user:register' %}">api</a>
-                              <a class="tags-button" href="{% url 'user:register' %}">token</a>
+                            {% for tag in question.tags.all %}
+                              <a class="tags-button" href="{% url 'user:register' %}">{{tag.tag.name}}</a>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
+                {% endfor %}
+
 
             </div>
             {% endif %}

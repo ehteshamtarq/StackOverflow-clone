@@ -1,4 +1,471 @@
-<h1>{{ question.title }}</h1>
-<p>{{ question.body }}</p>
-<p><strong>Views:</strong> {{ question.views }}</p>
-<p><strong>Created at:</strong> {{ question.created_at }}</p>
+{% extends "questions/base.html" %}
+
+{% block content %}
+
+
+<main role="main" class="container main-contain">
+  <div class="row flex">
+    <div class="col-md-2 sidebar">
+        <div class="link">
+            <a href="{% url 'user:main' %}" >
+                {% load static %}
+                <img class="icon" src="{% static 'images/home.svg' %}" alt="Home">
+                Home
+            </a>
+        </div>
+        <div class="link">
+            <a href="{% url 'questions:question_list' %}" >
+                {% load static %}
+                <img class="icon" src="{% static 'images/question.svg' %}" alt="Questions">
+                Questions
+            </a>
+        </div>
+        <div class="link">
+            <a href="{% url 'questions:tag_list' %}" >
+                {% load static %}
+                <img class="icon" src="{% static 'images/tags.svg' %}" alt="Tags">
+                Tags
+            </a>
+        </div>
+    </div>
+    <div class="col-md-9 mainpage">
+        <div class="heading-title">
+            <h2><a href="{% url 'questions:question_detail' pk=question.pk %}">{{ question.title }}</a></h2>
+            <div><a class="ask-question" href="{% url 'questions:question_create' %}">Ask Questions</a></div>
+        </div>
+        <div class="votes-askedWhen">
+            <p><span class="field-name">Asked</span> <span class="field-value">{{ question.created_at|date:"d-m-Y" }}</span></p>
+            <p><span class="field-name">Modified</span> <span class="field-value">{{ question.updated_at |date:"d-m-Y" }}</span></p>
+            <p><span class="field-name">Viewed</span> <span class="field-value">{{ question.views }} times</span></p>
+        </div>
+        <hr class="after-heading">
+        <div id="markdown-content" data-markdown="{{ question.body }}"></div>
+
+        <div class="tags-username">
+            <div class="tags">
+        {% for tag in tags %}
+                <a class="tags-button" href="{% url 'questions:tag_list' %}">{{ tag.tag }}</a>
+        {% empty %}
+            <p></p>
+        {% endfor %}
+        </div>
+            <div class="username">{{username}}</div>
+        </div>
+
+        <button class="comment-btn toggle-button">Add Comment</button>
+        <div class="comment-box mt-3" style="display: none;">
+                 <form method="post">
+                {% csrf_token %}
+                {{ comment_form.as_p }}
+                <input type="hidden" class="comment-input" name="target_type" value="question">
+                <button  class="btn btn-success mt-2" type="submit" name="comment_submit">Submit Comment</button>
+            </form>
+        </div>
+
+        {% if comments %}
+        <div class="comment-section">
+            <hr>
+            {% for comment in comments %}
+                <div class="comment-body">{{ comment.body }}</div>
+                <div class="comment-owner"><p>{{ comment.user.username }}</p></div>
+                <hr>
+            {% empty %}
+\            {% endfor %}
+        </div>
+        {% endif %}
+
+        <hr>
+        <h4 class="answer-count-heading">
+            {% if answer_count == 1 %}
+                1 Answer
+            {% elif answer_count > 1 %}
+                {{ answer_count }} Answers
+            {% else %}
+            {% endif %}
+        </h4>
+
+        {% for answer in answers %}
+            <div>
+                 <div id="markdown-content1" data-markdown="{{ answer.body }}"></div>
+                <div class="answer-username-created">
+                    <div>{{ answer.user.username }}</div>
+                    <div>{{ answer.created_at |date:"d-m-Y" }}</div>
+                </div>
+
+                <button class="comment-btn toggle-button">Add Comment</button>
+                <div class="comment-box mt-3" style="display: none;">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ comment_form.as_p }}
+                        <input type="hidden" name="target_id" value="{{ answer.id }}">
+                        <input type="hidden" name="target_type" value="answer">
+                        <button class="btn btn-success mt-2" type="submit" name="comment_submit">Submit Comment</button>
+                    </form>
+                </div>
+
+                {% if answer.comments %}
+                <div class="comment-section">
+                <hr>
+                {% for comment in answer.comments %}
+                    <div class="comment-body">{{ comment.body }}</div>
+                    <div class="comment-owner"><p>{{ comment.user.username }}</p></div>
+                    <hr>
+                {% empty %}
+                {% endfor %}
+                </div>
+                {% endif %}
+
+            </div>
+            <hr>
+        {% empty %}
+        {% endfor %}
+
+        <h5 class="your-answer">Your Answer</h5>
+        <div class="answer-section">
+            <div class="answer-section-left">
+                <form method="post">
+                    {% csrf_token %}
+                    <label for="{{ answer_form.body.id_for_label }}">Your Answer:</label>
+                    <textarea id="answer-box" name="{{ answer_form.body.name }}"
+                              id="{{ answer_form.body.id_for_label }}"
+                              rows="10"
+                              cols="40"></textarea>
+                    <button class="answer-post-button" type="submit" name="answer_submit">Post Your Answer</button>
+                </form>
+            </div>
+            <div class="answer-section-right">
+                <div id="preview-answer"></div>
+            </div>
+        </div>
+
+            </div>
+          </div>
+        </main>
+<style>
+    .flex{
+        gap: 0px;
+    }
+
+    .mainpage{
+        border-left: 1px solid gray;
+        padding-left: 50px;
+    }
+
+    .heading-title{
+        width: 100%;
+        display:flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-bottom: 4px;
+    }
+
+    .block{
+        width: 100%;
+    }
+
+    .block h2 a {
+        color: black;
+        font-weight: 400;
+        font-size: 2rem;
+    }
+
+    #markdown-content{
+        background-color: #fcfcfc;
+        padding: 10px;
+    }
+
+    .inline-code {
+          font-family: 'Consolas', monospace;
+          background-color: #f0f0f0;
+          padding: 0.2em 0.4em;
+          border-radius: 4px;
+          color: #333;
+    }
+
+    .code-block {
+          font-family: 'Consolas', monospace;
+              background-color: #E7E7E7;
+          color: #333;
+          padding: 3px 3px;
+          border-radius: 4px;
+          white-space: pre-wrap;
+          word-wrap: break-word;
+          overflow-x: auto;
+    }
+
+    label{
+        display: none;
+       }
+
+    pre {
+          margin: 0;
+          padding: 10px;
+          overflow: auto;
+          background-color:  #E7E7E7;
+    }
+
+    .votes-askedWhen{
+        margin-left: 10px;
+        display:flex;
+        gap: 20px;
+    }
+
+    .field-name{
+        color: gray;
+        font-size: 12px;
+    }
+
+    .field-value{
+        color: black;
+        font-size: 12px;
+    }
+
+    .ask-question{
+        padding-top: 10px;
+        padding-bottom: 10px;
+        font-size: 14px !important;
+    }
+
+    .comment-btn{
+        margin-top: 30px;
+        margin-left: 30px;
+        background-color: white;
+        color: gray;
+        font-size: 14px;
+        outline: 0;
+        border: none;
+    }
+
+    .comment-btn:focus, .comment-btn:hover{
+        outline: none;
+        cursor: pointer;
+    }
+
+    .comment-box{
+         transition: opacity 0.3s ease, max-height 0.3s ease; /* Smooth transition */
+    }
+
+    .tags-button{
+        color: black;
+        font-size: 12px !important;
+        background: #E3E6E8;
+        padding: 5px;
+        border-radius: 5px;
+        transition: 0.3s ease-in;
+    }
+
+    .tags{
+        margin-left: 30px;
+        font-weight: 500;
+        display:flex;
+        flex-direction: row;
+        gap: 20px;
+    }
+
+.tags-button:hover{
+    color: black;
+    background-color: #aeb7bd;
+}
+    .tags-username{
+        margin-top: 50px;
+        display:flex;
+        flex-direction:row;
+        gap: 200px;
+        margin-bottom: 30px;
+        }
+
+    .username{
+        color: blue;
+    }
+
+    .comment-section{
+        margin-top: 30px;
+        background-color: #FFF1E5;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        margin-left: 60px;
+    }
+
+    .comment-section hr{
+        margin-top: 5px;
+        margin-bottom: 5px;
+        color: black;
+        }
+
+    .comment-owner{
+        margin-right: 100px;
+        display:flex;
+        justify-content: flex-end;
+        align-items:center;
+        color: blue;
+        font-size: 14px;
+    }
+
+    .answer-username-created{
+        font-size: 14px;
+        display:flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-end;
+    }
+
+    textarea{
+        padding: 10px;
+        height: auto;
+    }
+
+    .your-answer{
+        margin-bottom: 30px;
+    }
+
+    .answer-post-button{
+        color: white;
+        background-color: hsl(210,77%,46%);
+        color: white;
+         padding-left: 10px;
+         padding-right: 10px;
+         padding-top: 5px;
+         padding-bottom: 5px;
+         border-radius: 5px;
+         transition: 0.3s ease-in;
+         border: none;
+         font-size: 14px;
+         margin-top: 30px;
+         margin-bottom: 30px;
+    }
+    .answer-section-left{
+            width: 70%;
+    }
+
+    .answer-section-right{
+            width: 25%
+    }
+
+    .answer-section{
+        width: 130%;
+        display:flex;
+        flex-direction: row;
+    }
+
+    .answer-count-heading{
+        margin-bottom: 30px;
+    }
+
+    .heading-title h2{
+        width: 85%;
+    }
+
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const textarea = document.getElementById('answer-box');
+
+        textarea.addEventListener('input', function () {
+          this.style.height = 'auto';
+          this.style.height = `${this.scrollHeight}px`;
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const bodyTextarea = document.getElementById('answer-box');
+        const previewDiv = document.getElementById('preview-answer');
+
+        function parseMarkdown(text) {
+              let parsed = text;
+
+              parsed = parsed.replace(/```([\s\S]*?)```/g, '<pre><code class="code-block">$1</code></pre>');
+              parsed = parsed.replace(/^###### (.*)/gm, '<h6>$1</h6>')
+                             .replace(/^##### (.*)/gm, '<h5>$1</h5>')
+                             .replace(/^#### (.*)/gm, '<h4>$1</h4>')
+                             .replace(/^### (.*)/gm, '<h3>$1</h3>')
+                             .replace(/^## (.*)/gm, '<h2>$1</h2>')
+                             .replace(/^# (.*)/gm, '<h1>$1</h1>');
+
+              parsed = parsed.replace(/!\[([^\]]+)]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
+
+              parsed = parsed.replace(/\[([^\]]+)]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+
+              parsed = parsed.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')  // Bold
+                             .replace(/\*(.*?)\*/g, '<i>$1</i>')  // Italic
+                             .replace(/_(.*?)_/g, '<i>$1</i>')   // Italic (underscore version)
+                             .replace(/~~(.*?)~~/g, '<del>$1</del>'); // Strikethrough
+
+              parsed = parsed.replace(/`(.*?)`/g, '<code class="inline-code">$1</code>');
+              parsed = parsed.replace(/\n/g, '<br>');
+              parsed = parsed.replace(/  /g, '&nbsp;&nbsp;');
+
+              return parsed;
+        }
+
+         function updatePreview() {
+              const bodyText = bodyTextarea.value.trim();
+
+              let previewHtml = ``;
+
+              previewHtml += parseMarkdown(bodyText);
+
+              previewDiv.innerHTML = previewHtml;
+        }
+
+
+        bodyTextarea.addEventListener('input', updatePreview);
+
+    });
+
+</script>
+
+  <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const markdownElement = document.getElementById("markdown-content1");
+
+        if (markdownElement) {
+            const markdownText = markdownElement.getAttribute("data-markdown");
+
+            // Simple Markdown Parser
+            function parseMarkdown(markdown) {
+                markdown = markdown.replace(/```([\s\S]*?)```/g, '<pre><code class="code-block">$1</code></pre>');
+
+                // Convert headings (## Heading)
+                markdown = markdown.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+                markdown = markdown.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+                // Convert bold (**bold**)
+                markdown = markdown.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+                // Convert italic (*italic*)
+                markdown = markdown.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+                // Convert unordered lists (- item)
+                markdown = markdown.replace(/^- (.+)$/gm, '<li>$1</li>');
+                markdown = markdown.replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>');
+
+                // Convert links ([text](url))
+                markdown = markdown.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>');
+                markdown = markdown.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')  // Bold
+                     .replace(/\*(.*?)\*/g, '<i>$1</i>')  // Italic
+                     .replace(/_(.*?)_/g, '<i>$1</i>')   // Italic (underscore version)
+                     .replace(/~~(.*?)~~/g, '<del>$1</del>'); // Strikethrough
+
+                markdown = markdown.replace(/`(.*?)`/g, '<code class="inline-code">$1</code>');
+                markdown = markdown.replace(/\n/g, '<br>');
+                markdown = markdown.replace(/  /g, '&nbsp;&nbsp;');
+
+                return markdown;
+            }
+
+            // Parse Markdown to HTML
+            const htmlContent = parseMarkdown(markdownText);
+
+            // Set the rendered HTML content
+            markdownElement.innerHTML = htmlContent;
+        }
+    });
+
+</script>
+
+
+{% endblock %}

@@ -14,8 +14,6 @@
       integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
       crossorigin="anonymous"
     />
-
-
       <link
       rel="stylesheet"
       type="text/css"
@@ -23,8 +21,6 @@
     />
 
     <title>StackOverflow</title>
-
-
   </head>
 
   <body>
@@ -61,7 +57,6 @@
         </div>
       </nav>
     </header>
-
     <main role="main" class="container">
       <div class="row">
         <div class="block">
@@ -97,77 +92,53 @@
             });
         });
     </script>
+
   <script>
-      document.addEventListener('DOMContentLoaded', function() {
-    const titleInput = document.getElementById('title');
-    const bodyTextarea = document.getElementById('content');
-    const previewDiv = document.getElementById('preview');
+      document.addEventListener("DOMContentLoaded", function () {
+        const markdownElement = document.getElementById("markdown-content");
 
-    // Function to apply markdown to HTML
-    function parseMarkdown(text) {
-      let parsed = text;
+        if (markdownElement) {
+            const markdownText = markdownElement.getAttribute("data-markdown");
 
-      // Convert headers (Markdown `#` syntax to HTML)
-      parsed = parsed.replace(/```([\s\S]*?)```/g, '<pre><code class="code-block">$1</code></pre>');
-      parsed = parsed.replace(/^###### (.*)/gm, '<h6>$1</h6>')
-                     .replace(/^##### (.*)/gm, '<h5>$1</h5>')
-                     .replace(/^#### (.*)/gm, '<h4>$1</h4>')
-                     .replace(/^### (.*)/gm, '<h3>$1</h3>')
-                     .replace(/^## (.*)/gm, '<h2>$1</h2>')
-                     .replace(/^# (.*)/gm, '<h1>$1</h1>');
+            function parseMarkdown(markdown) {
+                markdown = markdown.replace(/```([\s\S]*?)```/g, '<pre><code class="code-block">$1</code></pre>');
 
-      // Convert images
-      parsed = parsed.replace(/!\[([^\]]+)]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
+                markdown = markdown.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+                markdown = markdown.replace(/^# (.+)$/gm, '<h1>$1</h1>');
 
-      // Convert links
-      parsed = parsed.replace(/\[([^\]]+)]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+                markdown = markdown.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 
-      // Convert bold and italic text
-      parsed = parsed.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')  // Bold
+                markdown = markdown.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+                markdown = markdown.replace(/^- (.+)$/gm, '<li>$1</li>');
+                markdown = markdown.replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>');
+
+                markdown = markdown.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>');
+                markdown = markdown.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')  // Bold
                      .replace(/\*(.*?)\*/g, '<i>$1</i>')  // Italic
                      .replace(/_(.*?)_/g, '<i>$1</i>')   // Italic (underscore version)
                      .replace(/~~(.*?)~~/g, '<del>$1</del>'); // Strikethrough
 
-      parsed = parsed.replace(/`(.*?)`/g, '<code class="inline-code">$1</code>');
-      parsed = parsed.replace(/\n/g, '<br>');
-      parsed = parsed.replace(/  /g, '&nbsp;&nbsp;');
+                markdown = markdown.replace(/`(.*?)`/g, '<code class="inline-code">$1</code>');
+                markdown = markdown.replace(/\n/g, '<br>');
+                markdown = markdown.replace(/  /g, '&nbsp;&nbsp;');
 
-      return parsed;
-    }
+                return markdown;
+            }
 
-    // Function to update preview with markdown content
-    function updatePreview() {
-      const titleText = titleInput.value.trim();
-      const bodyText = bodyTextarea.value.trim();
+            const htmlContent = parseMarkdown(markdownText);
 
-      // Set title as bold in the preview
-      let previewHtml = `<h2><b>${titleText}</b></h2>`;
+            markdownElement.innerHTML = htmlContent;
+        }
+    });
 
-      // Apply markdown to body
-      previewHtml += parseMarkdown(bodyText);
+</script>
 
-      // Update preview section
-      previewDiv.innerHTML = previewHtml;
-    }
 
-    // Event listeners to update the preview as the user types
-    titleInput.addEventListener('input', updatePreview);
-    bodyTextarea.addEventListener('input', updatePreview);
-
-    // Initial update to populate preview when the page loads
-    updatePreview();
-  });
-
-  function autoResizeTextarea(textarea) {
-  // Reset the height to auto to shrink it back when text is deleted
-  textarea.style.height = 'auto';
-  // Set the height to the scroll height (the height required to fit the content)
-  textarea.style.height = `${textarea.scrollHeight}px`;
-}
-
-      document.getElementById('content').addEventListener('input', function() {
-  autoResizeTextarea(this);
-      });
-  </script>
+<script>
+    $(document).on('click', '.toggle-button', function() {
+        $(this).next('.comment-box').toggle();
+    });
+</script>
   </body>
 </html>
