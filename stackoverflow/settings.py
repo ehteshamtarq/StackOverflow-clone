@@ -119,6 +119,9 @@ LOGIN_URL = 'user:login'
 
 STATIC_URL = 'static/'
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
 
 if not DEBUG:
     # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
@@ -131,7 +134,6 @@ if not DEBUG:
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"

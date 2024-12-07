@@ -1,6 +1,66 @@
-<h1>All Questions</h1>
-<ul>
-    {% for question in questions %}
-        <li><a href="{{ question.id }}">{{ question.title }}</a></li>
-    {% endfor %}
-</ul>
+{% extends 'questions/base.html' %}
+
+{% block content %}
+    <div class="question-list-section">
+        <div class="question-list-heading">
+            <div class="question-list-heading-left">
+            <div class="newest-question">
+                Newest Questions
+            </div>
+        </div>
+            <div class="question-list-heading-right">
+            <a class="ask-question" href="{% url 'questions:question_create' %}">Ask Questions</a>
+        </div>
+        </div>
+        <div class="total-questions">{{ total_questions }} Questions</div>
+        <hr>
+
+        <div class="question-list">
+            {% for question in questions %}
+                <div class="latest-post-box">
+                    <div class="votes-answer-stats">
+                        <div class="votes"> 0 votes</div>
+                        <div class="answer"> {{ question.answer_count }} answers</div>
+                        <div class="view"> {{ question.views }} views</div>
+                    </div>
+                    <div class="post-question">
+                        <a class = "question" href="{% url 'questions:question_detail' question.id %}">{{ question.title }}</a>
+                        <p class="description">{{ question.body_clean |slice:":200"  }}</p>
+                        <div class="tags">
+                            {% for tag in question.tags.all %}
+                              <a class="tags-button" href="{% url 'user:register' %}">{{tag.tag.name}}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% if is_paginated %}
+
+      {% if page_obj.has_previous %}
+        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+      {% endif %}
+
+    {% endif %}
+        </div>
+
+
+    </div>
+
+
+
+
+{% endblock %}

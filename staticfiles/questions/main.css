@@ -394,3 +394,234 @@ a{
 .tag-box a:hover{
     background-color: #c5cbd0;
 }
+
+.flex{
+        gap: 0px;
+    }
+
+    .mainpage{
+        border-left: 1px solid gray;
+        padding-left: 50px;
+    }
+
+    .heading-title{
+        width: 100%;
+        display:flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-bottom: 4px;
+    }
+
+    .block{
+        width: 100%;
+    }
+
+    .block h2 a {
+        color: black;
+        font-weight: 400;
+        font-size: 2rem;
+    }
+
+    #markdown-content{
+        background-color: #fcfcfc;
+        padding: 10px;
+    }
+
+    .inline-code {
+          font-family: 'Consolas', monospace;
+          background-color: #f0f0f0;
+          padding: 0.2em 0.4em;
+          border-radius: 4px;
+          color: #333;
+    }
+
+    .code-block {
+          font-family: 'Consolas', monospace;
+              background-color: #E7E7E7;
+          color: #333;
+          padding: 3px 3px;
+          border-radius: 4px;
+          white-space: pre-wrap;
+          word-wrap: break-word;
+          overflow-x: auto;
+    }
+
+    label{
+        display: none;
+       }
+
+    pre {
+          margin: 0;
+          padding: 10px;
+          overflow: auto;
+          background-color:  #E7E7E7;
+    }
+
+    .votes-askedWhen{
+        margin-left: 10px;
+        display:flex;
+        gap: 20px;
+    }
+
+    .field-name{
+        color: gray;
+        font-size: 12px;
+    }
+
+    .field-value{
+        color: black;
+        font-size: 12px;
+    }
+
+    .ask-question{
+        padding-top: 10px;
+        padding-bottom: 10px;
+        font-size: 14px !important;
+    }
+
+    .comment-btn{
+        margin-top: 30px;
+        margin-left: 30px;
+        background-color: white;
+        color: gray;
+        font-size: 14px;
+        outline: 0;
+        border: none;
+    }
+
+    .comment-btn:focus, .comment-btn:hover{
+        outline: none;
+        cursor: pointer;
+    }
+
+    .comment-box{
+         transition: opacity 0.3s ease, max-height 0.3s ease; /* Smooth transition */
+    }
+
+    .tags-button{
+        color: black;
+        font-size: 12px !important;
+        background: #E3E6E8;
+        padding: 5px;
+        border-radius: 5px;
+        transition: 0.3s ease-in;
+    }
+
+    .tags{
+        margin-left: 30px;
+        font-weight: 500;
+        display:flex;
+        flex-direction: row;
+        gap: 20px;
+    }
+
+.tags-button:hover{
+    color: black;
+    background-color: #aeb7bd;
+}
+    .tags-username{
+        margin-top: 50px;
+        display:flex;
+        flex-direction:row;
+        gap: 200px;
+        margin-bottom: 30px;
+        }
+
+    .username{
+        color: blue;
+    }
+
+    .comment-section{
+        margin-top: 30px;
+        background-color: #FFF1E5;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        margin-left: 60px;
+    }
+
+    .comment-section hr{
+        margin-top: 5px;
+        margin-bottom: 5px;
+        color: black;
+        }
+
+    .comment-owner{
+        margin-right: 100px;
+        display:flex;
+        justify-content: flex-end;
+        align-items:center;
+        color: blue;
+        font-size: 14px;
+    }
+
+    .answer-username-created{
+        font-size: 14px;
+        display:flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-end;
+    }
+
+    textarea{
+        padding: 10px;
+        height: auto;
+    }
+
+    .your-answer{
+        margin-bottom: 30px;
+    }
+
+    .answer-post-button{
+        color: white;
+        background-color: hsl(210,77%,46%);
+        color: white;
+         padding-left: 10px;
+         padding-right: 10px;
+         padding-top: 5px;
+         padding-bottom: 5px;
+         border-radius: 5px;
+         transition: 0.3s ease-in;
+         border: none;
+         font-size: 14px;
+         margin-top: 30px;
+         margin-bottom: 30px;
+    }
+    .answer-section-left{
+            width: 70%;
+    }
+
+    .answer-section-right{
+            width: 25%
+    }
+
+    .answer-section{
+        width: 130%;
+        display:flex;
+        flex-direction: row;
+    }
+
+    .answer-count-heading{
+        margin-bottom: 30px;
+    }
+
+    .heading-title h2{
+        width: 85%;
+    }
+
+.question-section-and-question-vote-section{
+    display:flex !important;
+    flex-direction: row !important;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.question-vote-section-left .votes{
+    display:flex !important;
+    flex-direction: column !important;
+}
+
+.vote-btn{
+    background-color: white;
+    border: none;}

@@ -24,3 +24,8 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ['body']
+
+class QuestionEditDeleteForm(forms.ModelForm):
+    class Meta:
+        model = Question
+        fields = ['title', 'body']

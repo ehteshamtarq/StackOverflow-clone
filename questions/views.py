@@ -1,16 +1,39 @@
-from django.views.generic import ListView, DetailView, CreateView
+import markdown2
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Question, Tag, QuestionTag, Answer, Comment
-from django.urls import reverse_lazy, reverse
-from .forms import QuestionForm, AnswerForm, CommentForm
-from django.views.generic.edit import FormMixin
-from django.shortcuts import redirect
+from .models import Question, Tag, QuestionTag, Answer, Comment, Vote
+from django.urls import reverse_lazy
+from .forms import AnswerForm, CommentForm, QuestionForm, QuestionEditDeleteForm
+from django.shortcuts import redirect, get_object_or_404,render
+from django.http import JsonResponse,HttpResponseForbidden
+from django.views import View
+from django.db.models import Count
+
 
 class QuestionListView(ListView):
     model = Question
-    template_name = 'questions/question_list.html'
+    template_name = 'question_list.html'
     context_object_name = 'questions'
+    paginate_by = 10
+    ordering = ['-created_at']
 
+    def get_queryset(self):
+        queryset = (
+            Question.objects
+            .select_related('user')
+            .annotate(answer_count=Count('answers'))
+            .prefetch_related('tags')
+            .order_by('-created_at')
+        )
+        for question in queryset:
+            question.body_clean = markdown2.markdown(question.body)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total_questions'] = Question.objects.count()
+        return context
 
 class QuestionDetailView(DetailView):
     model = Question
@@ -26,6 +49,17 @@ class QuestionDetailView(DetailView):
         context['tags'] = self.object.tags.all()
         context['username'] = self.object.user.username
         context['answer_count'] = self.object.answers.count()
+        context['vote_count'] = self.object.upvotes - self.object.downvotes
+
+        if self.request.user.is_authenticated:
+            vote = Vote.objects.filter(user=self.request.user, question=self.object).first()
+            context['user_vote'] = vote.vote_type if vote else None
+        else:
+            context['user_vote'] = None
+
+        if self.request.method == 'GET':
+            self.object.views += 1
+            self.object.save(update_fields=['views'])
 
         self.object.views += 1
         self.object.save(update_fields=['views'])
@@ -78,7 +112,6 @@ class QuestionDetailView(DetailView):
                     comment.save()
         return redirect('questions:question_detail', pk=self.object.pk)
 
-
 class QuestionCreateView(LoginRequiredMixin, CreateView):
     model = Question
     form_class = QuestionForm
@@ -86,12 +119,10 @@ class QuestionCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('questions:question_list')
 
     def form_valid(self, form):
-        # Save the question
         question = form.save(commit=False)
         question.user = self.request.user
         question.save()
 
-        # Save the tags
         tags = form.cleaned_data['tags']
         for tag in tags:
             QuestionTag.objects.create(question=question, tag=tag)
@@ -102,8 +133,142 @@ class QuestionCreateView(LoginRequiredMixin, CreateView):
         print(form.errors)  # Debugging invalid form errors
         return super().form_invalid(form)
 
-
 class TagListView(ListView):
     model = Tag
     template_name = 'tags/tag_list.html'
     context_object_name = 'tags'
+
+class VoteQuestionView(View):
+    def post(self, request, question_id, vote_type):
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Login required"}, status=403)
+
+        question = get_object_or_404(Question, id=question_id)
+        vote, created = Vote.objects.get_or_create(user=request.user, question=question)
+
+        if not created:
+            if vote.vote_type == vote_type:
+                vote.delete()
+                if vote_type == 'upvote':
+                    question.upvotes -= 1
+                else:
+                    question.downvotes -= 1
+                user_vote_type = None
+            else:
+
+                if vote.vote_type == 'upvote':
+                    question.upvotes -= 1
+                    question.downvotes += 1
+                else:
+                    question.downvotes -= 1
+                    question.upvotes += 1
+                vote.vote_type = vote_type
+                vote.save()
+                user_vote_type = vote.vote_type
+        else:
+            vote.vote_type = vote_type
+            vote.save()
+            if vote_type == 'upvote':
+                question.upvotes += 1
+            else:
+                question.downvotes += 1
+            user_vote_type = vote.vote_type
+
+        question.save()
+
+        return JsonResponse({
+            "upvotes": question.upvotes,
+            "downvotes": question.downvotes,
+            "user_vote": user_vote_type
+        })
+
+class EditQuestionView(UpdateView):
+    model = Question
+    form_class = QuestionEditDeleteForm
+    template_name = 'questions/edit_question.html'
+
+    def get_queryset(self):
+        # Ensure that only the owner can edit
+        return Question.objects.filter(user=self.request.user)
+
+    def form_valid(self, form):
+        # Save the form and redirect to the question detail page
+        self.object = form.save()
+        return redirect('questions:question_detail', pk=self.object.pk)  # Replace with your detail view name
+
+class DeleteQuestionView(View):
+    template_name = 'questions/confirm_delete.html'
+
+    def get(self, request, pk):
+        question = get_object_or_404(Question, pk=pk)
+        if question.user != request.user:
+            return HttpResponseForbidden("You are not allowed to delete this question.")
+        return render(request, self.template_name, {'question': question})
+
+    def post(self, request, pk):
+        question = get_object_or_404(Question, pk=pk)
+        if question.user != request.user:
+            return HttpResponseForbidden("You are not allowed to delete this question.")
+        question.delete()
+        return redirect('questions:question_list')
+
+class EditAnswerView(UpdateView):
+    model = Answer
+    form_class = AnswerForm
+    template_name = 'questions/edit_answer.html'
+
+    def get_queryset(self):
+        return Answer.objects.filter(user=self.request.user)
+
+    def form_valid(self, form):
+        self.object = form.save()
+
+        return redirect('questions:question_detail', pk=self.object.question.pk)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['question'] = self.object.question
+        return context
+
+class DeleteAnswerView(View):
+    template_name = 'questions/confirm_delete_answer.html'
+
+    def get(self, request, pk):
+        answer = get_object_or_404(Answer, pk=pk)
+        if answer.user != request.user:
+            return HttpResponseForbidden("You are not allowed to delete this question.")
+        return render(request, self.template_name, {'question': answer})
+
+    def post(self, request, pk):
+        answer = get_object_or_404(Answer, pk=pk)
+        if answer.user != request.user:
+            return HttpResponseForbidden("You are not allowed to delete this question.")
+        answer.delete()
+        return redirect('questions:question_list')
+
+class DeleteCommentView(View):
+    template_name = 'questions/confirm_delete_comment.html'
+
+    def get(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk)
+
+        if comment.user != request.user:
+            return HttpResponseForbidden("You are not allowed to delete this comment.")
+
+        return render(request, self.template_name, {'comment': comment})
+
+    def post(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk)
+
+        if comment.user != request.user:
+            return HttpResponseForbidden("You are not allowed to delete this comment.")
+
+        if comment.answer:
+            answer = comment.answer
+            comment.delete()
+            return redirect('questions:question_detail', pk=answer.question.pk)
+        elif comment.question:
+            question = comment.question
+            comment.delete()
+            return redirect('questions:question_detail', pk=question.pk)
+        return HttpResponseForbidden("Invalid comment association.")

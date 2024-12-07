@@ -33,15 +33,33 @@
             <h2><a href="{% url 'questions:question_detail' pk=question.pk %}">{{ question.title }}</a></h2>
             <div><a class="ask-question" href="{% url 'questions:question_create' %}">Ask Questions</a></div>
         </div>
+
         <div class="votes-askedWhen">
             <p><span class="field-name">Asked</span> <span class="field-value">{{ question.created_at|date:"d-m-Y" }}</span></p>
             <p><span class="field-name">Modified</span> <span class="field-value">{{ question.updated_at |date:"d-m-Y" }}</span></p>
             <p><span class="field-name">Viewed</span> <span class="field-value">{{ question.views }} times</span></p>
         </div>
-        <hr class="after-heading">
-        <div id="markdown-content" data-markdown="{{ question.body }}"></div>
 
-        <div class="tags-username">
+        <hr class="after-heading">
+
+        <div class="question-section-and-question-vote-section">
+            <div class="question-vote-section-left">
+                <div class="votes">
+                <button class="vote-btn" data-url="{% url 'questions:vote_question' question.id 'upvote' %}" id="upvote-btn">
+                    {% load static %}
+                    <img class="vote" src="{% static 'images/up-vote.png' %}" alt="up-vote">
+                </button>
+                    <div><h5 id="total_votes">{{vote_count}}</h5></div>
+                <button class="vote-btn" data-url="{% url 'questions:vote_question' question.id 'downvote' %}" id="downvote-btn">
+                    {% load static %}
+                    <img class="vote" src="{% static 'images/down-vote.png' %}" alt="down-vote">
+                </button>
+        </div>
+            </div>
+            <div class="question-content-section-right">
+                <div id="markdown-content" data-markdown="{{ question.body }}"></div>
+
+                <div class="tags-username">
             <div class="tags">
         {% for tag in tags %}
                 <a class="tags-button" href="{% url 'questions:tag_list' %}">{{ tag.tag }}</a>
@@ -51,9 +69,14 @@
         </div>
             <div class="username">{{username}}</div>
         </div>
+                {% if request.user == question.user %}
+  <a href="{% url 'questions:edit_question' question.pk %}">Edit</a>
+  <a href="{% url 'questions:delete_question' question.pk %}">Delete</a>
+{% endif %}
 
-        <button class="comment-btn toggle-button">Add Comment</button>
-        <div class="comment-box mt-3" style="display: none;">
+
+                <button class="comment-btn toggle-button">Add Comment</button>
+                <div class="comment-box mt-3" style="display: none;">
                  <form method="post">
                 {% csrf_token %}
                 {{ comment_form.as_p }}
@@ -62,19 +85,26 @@
             </form>
         </div>
 
-        {% if comments %}
-        <div class="comment-section">
+                {% if comments %}
+                <div class="comment-section">
             <hr>
             {% for comment in comments %}
                 <div class="comment-body">{{ comment.body }}</div>
                 <div class="comment-owner"><p>{{ comment.user.username }}</p></div>
+                    {% if request.user == comment.user %}
+  <a href="{% url 'questions:delete_comment' comment.pk %}">Delete</a>
+{% endif %}
                 <hr>
             {% empty %}
 \            {% endfor %}
         </div>
-        {% endif %}
+                {% endif %}
+
+            </div>
+        </div>
 
         <hr>
+
         <h4 class="answer-count-heading">
             {% if answer_count == 1 %}
                 1 Answer
@@ -91,7 +121,10 @@
                     <div>{{ answer.user.username }}</div>
                     <div>{{ answer.created_at |date:"d-m-Y" }}</div>
                 </div>
-
+                {% if request.user == answer.user %}
+  <a href="{% url 'questions:edit_answer' answer.pk %}">Edit</a>
+  <a href="{% url 'questions:delete_answer' answer.pk %}">Delete</a>
+{% endif %}
                 <button class="comment-btn toggle-button">Add Comment</button>
                 <div class="comment-box mt-3" style="display: none;">
                     <form method="post">
@@ -109,6 +142,9 @@
                 {% for comment in answer.comments %}
                     <div class="comment-body">{{ comment.body }}</div>
                     <div class="comment-owner"><p>{{ comment.user.username }}</p></div>
+                    {% if request.user == comment.user %}
+  <a href="{% url 'questions:delete_comment' comment.pk %}">Delete</a>
+{% endif %}
                     <hr>
                 {% empty %}
                 {% endfor %}
@@ -142,223 +178,28 @@
           </div>
         </main>
 <style>
-    .flex{
-        gap: 0px;
+
+    .vote-btn{
+        transition: 0.3s ease-in;
     }
 
-    .mainpage{
-        border-left: 1px solid gray;
-        padding-left: 50px;
-    }
-
-    .heading-title{
-        width: 100%;
-        display:flex;
-        flex-direction: row;
-        justify-content: space-between;
-        margin-bottom: 4px;
-    }
-
-    .block{
-        width: 100%;
-    }
-
-    .block h2 a {
-        color: black;
-        font-weight: 400;
-        font-size: 2rem;
-    }
-
-    #markdown-content{
-        background-color: #fcfcfc;
-        padding: 10px;
-    }
-
-    .inline-code {
-          font-family: 'Consolas', monospace;
-          background-color: #f0f0f0;
-          padding: 0.2em 0.4em;
-          border-radius: 4px;
-          color: #333;
-    }
-
-    .code-block {
-          font-family: 'Consolas', monospace;
-              background-color: #E7E7E7;
-          color: #333;
-          padding: 3px 3px;
-          border-radius: 4px;
-          white-space: pre-wrap;
-          word-wrap: break-word;
-          overflow-x: auto;
-    }
-
-    label{
-        display: none;
-       }
-
-    pre {
-          margin: 0;
-          padding: 10px;
-          overflow: auto;
-          background-color:  #E7E7E7;
-    }
-
-    .votes-askedWhen{
-        margin-left: 10px;
-        display:flex;
-        gap: 20px;
-    }
-
-    .field-name{
-        color: gray;
-        font-size: 12px;
-    }
-
-    .field-value{
-        color: black;
-        font-size: 12px;
-    }
-
-    .ask-question{
-        padding-top: 10px;
-        padding-bottom: 10px;
-        font-size: 14px !important;
-    }
-
-    .comment-btn{
-        margin-top: 30px;
-        margin-left: 30px;
-        background-color: white;
-        color: gray;
-        font-size: 14px;
+    .button-selected{
+        background-color: #155CA4 !important;
+        border: none;
         outline: 0;
         border: none;
     }
 
-    .comment-btn:focus, .comment-btn:hover{
-        outline: none;
-        cursor: pointer;
+    .button-selected:focus{
+        outline: 0;
     }
 
-    .comment-box{
-         transition: opacity 0.3s ease, max-height 0.3s ease; /* Smooth transition */
+    .vote-selected{
+        filter: invert(1);
+        outline: 0;
+
     }
-
-    .tags-button{
-        color: black;
-        font-size: 12px !important;
-        background: #E3E6E8;
-        padding: 5px;
-        border-radius: 5px;
-        transition: 0.3s ease-in;
-    }
-
-    .tags{
-        margin-left: 30px;
-        font-weight: 500;
-        display:flex;
-        flex-direction: row;
-        gap: 20px;
-    }
-
-.tags-button:hover{
-    color: black;
-    background-color: #aeb7bd;
-}
-    .tags-username{
-        margin-top: 50px;
-        display:flex;
-        flex-direction:row;
-        gap: 200px;
-        margin-bottom: 30px;
-        }
-
-    .username{
-        color: blue;
-    }
-
-    .comment-section{
-        margin-top: 30px;
-        background-color: #FFF1E5;
-        padding-left: 10px;
-        padding-right: 10px;
-        padding-top: 20px;
-        padding-bottom: 20px;
-        margin-left: 60px;
-    }
-
-    .comment-section hr{
-        margin-top: 5px;
-        margin-bottom: 5px;
-        color: black;
-        }
-
-    .comment-owner{
-        margin-right: 100px;
-        display:flex;
-        justify-content: flex-end;
-        align-items:center;
-        color: blue;
-        font-size: 14px;
-    }
-
-    .answer-username-created{
-        font-size: 14px;
-        display:flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        align-items: flex-end;
-    }
-
-    textarea{
-        padding: 10px;
-        height: auto;
-    }
-
-    .your-answer{
-        margin-bottom: 30px;
-    }
-
-    .answer-post-button{
-        color: white;
-        background-color: hsl(210,77%,46%);
-        color: white;
-         padding-left: 10px;
-         padding-right: 10px;
-         padding-top: 5px;
-         padding-bottom: 5px;
-         border-radius: 5px;
-         transition: 0.3s ease-in;
-         border: none;
-         font-size: 14px;
-         margin-top: 30px;
-         margin-bottom: 30px;
-    }
-    .answer-section-left{
-            width: 70%;
-    }
-
-    .answer-section-right{
-            width: 25%
-    }
-
-    .answer-section{
-        width: 130%;
-        display:flex;
-        flex-direction: row;
-    }
-
-    .answer-count-heading{
-        margin-bottom: 30px;
-    }
-
-    .heading-title h2{
-        width: 85%;
-    }
-
 </style>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const textarea = document.getElementById('answer-box');
@@ -417,8 +258,7 @@
     });
 
 </script>
-
-  <script>
+<script>
       document.addEventListener("DOMContentLoaded", function () {
         const markdownElement = document.getElementById("markdown-content1");
 
@@ -466,6 +306,99 @@
     });
 
 </script>
+<script>
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Check if this cookie starts with the name we want
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 
+ const updateVoteUI = (userVote) => {
+        const upvoteButton = document.querySelector("#upvote-btn");
+        const downvoteButton = document.querySelector("#downvote-btn");
+        const buttonVotes = document.getElementsByClassName('vote-btn');
 
+        upvoteButton.classList.remove('vote-selected');
+        downvoteButton.classList.remove('vote-selected');
+        Array.from(buttonVotes).forEach(buttonVote => {
+                buttonVote.classList.remove('button-selected');
+                });
+
+        if (userVote === null){
+            upvoteButton.classList.remove('vote-selected');
+            buttonVotes[0].classList.remove('button-selected');
+            downvoteButton.classList.remove('vote-selected');
+            buttonVotes[1].classList.remove('button-selected');
+            return;
+        }
+
+        else if (userVote === "upvote"){
+            upvoteButton.classList.add('vote-selected');
+            buttonVotes[0].classList.add('button-selected');
+        }else{
+            downvoteButton.classList.add('vote-selected');
+            buttonVotes[1].classList.add('button-selected');
+        }
+
+    };
+
+document.querySelectorAll('.vote-btn').forEach(button => {
+
+    button.addEventListener('click', function () {
+        const url = this.dataset.url;
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                document.getElementById('total_votes').textContent = data.upvotes - data.downvotes;
+                updateVoteUI(data.user_vote);
+            }
+        });
+    });
+});
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const userVote = "{{ user_vote }}";
+
+        const upvoteButton = document.querySelector("#upvote-btn");
+        const downvoteButton = document.querySelector("#downvote-btn");
+        const buttonVotes = document.getElementsByClassName('vote-btn');
+
+        upvoteButton.classList.remove('vote-selected');
+        downvoteButton.classList.remove('vote-selected');
+        Array.from(buttonVotes).forEach(buttonVote => {
+                buttonVote.classList.remove('button-selected');
+                });
+
+       if (userVote === "upvote"){
+            upvoteButton.classList.add('vote-selected');
+            buttonVotes[0].classList.add('button-selected');
+        }else if(userVote === "downvote"){
+            downvoteButton.classList.add('vote-selected');
+            buttonVotes[1].classList.add('button-selected');
+        }
+
+    });
+</script>
 {% endblock %}

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+</head>
+<body>
+    <form method="get" action="{% url 'user:search_view' %}">
+        <input type="text" name="query" placeholder="Search..." value="{{ query }}">
+        <button type="submit">Search</button>
+    </form>
+
+    <h1>Search Results</h1>
+    {% if questions %}
+        <ul>
+            {% for question in questions %}
+                <li>
+                    <h2>{{ question.title }}</h2>
+                    <p>{{ question.body|truncatewords:20 }}</p>
+                    <strong>Tags:</strong>
+                    <ul>
+                        {% for tag in question.questiontag_set.all %}
+                            <li>{{ tag.tag.name }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No results found for "{{ query }}"</p>
+    {% endif %}
+</body>
+</html>

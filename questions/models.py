@@ -16,10 +16,11 @@ class Question(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     views = models.IntegerField(default=0)
     is_closed = models.BooleanField(default=False)
+    upvotes = models.IntegerField(default=0)
+    downvotes = models.IntegerField(default=0)
 
     def __str__(self):
         return self.title
-
 
 class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
@@ -48,10 +49,17 @@ class Comment(models.Model):
         elif self.answer:
             return f"Comment by {self.user.username} on Answer '{self.answer.body[:30]}...'"
 
-
 class QuestionTag(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='tags')
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name='questions')
 
     class Meta:
         unique_together = ('question', 'tag')
+
+class Vote(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='votes')
+    vote_type = models.CharField(max_length=10, choices=(('upvote', 'Upvote'), ('downvote', 'Downvote')))
+
+    class Meta:
+        unique_together = ('user', 'question')

@@ -31,8 +31,8 @@
              {% load static %}
            <img src="{% static 'images/Stack_Overflow-Logo.png' %}" alt="Stack Overflow Logo">
         </a>
-          <form method="get" >
-            <input id = 'search' type="text" name="query" placeholder="Search...">
+          <form method="get" action="{% url 'user:search_view' %}">
+            <input id = 'search' type="text" name="query"  placeholder="Search..." value="{{ query }}">
           </form>
 
           {% if user.is_authenticated %}
