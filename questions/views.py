@@ -8,7 +8,8 @@ from django.shortcuts import redirect, get_object_or_404,render
 from django.http import JsonResponse,HttpResponseForbidden
 from django.views import View
 from django.db.models import Count
-
+from user.models import Profile
+from user.services import calculate_reputation
 
 class QuestionListView(ListView):
     model = Question
@@ -33,6 +34,7 @@ class QuestionListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['total_questions'] = Question.objects.count()
+        context['user_profile'] = get_object_or_404(Profile, user=self.request.user)
         return context
 
 class QuestionDetailView(DetailView):
@@ -50,6 +52,10 @@ class QuestionDetailView(DetailView):
         context['username'] = self.object.user.username
         context['answer_count'] = self.object.answers.count()
         context['vote_count'] = self.object.upvotes - self.object.downvotes
+        context['user_profile'] = get_object_or_404(Profile, user=self.request.user)
+        context['question_owner'] = self.object.user
+        context['question_owner_profile'] = get_object_or_404(Profile, user=self.object.user)
+        context['reputation'] = calculate_reputation(context['question_owner'])
 
         if self.request.user.is_authenticated:
             vote = Vote.objects.filter(user=self.request.user, question=self.object).first()
@@ -61,11 +67,10 @@ class QuestionDetailView(DetailView):
             self.object.views += 1
             self.object.save(update_fields=['views'])
 
-        self.object.views += 1
-        self.object.save(update_fields=['views'])
-
         for answer in context['answers']:
             answer.comments = Comment.objects.filter(answer=answer)
+            answer.profile = get_object_or_404(Profile, user=answer.user)
+            answer.reputation = calculate_reputation(answer.user)
 
         return context
 
@@ -118,6 +123,13 @@ class QuestionCreateView(LoginRequiredMixin, CreateView):
     template_name = 'questions/question_form.html'
     success_url = reverse_lazy('questions:question_list')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get the user's profile (adjust based on your setup)
+        context['user_profile'] = get_object_or_404(Profile, user=self.request.user)
+        context['form'] = self.get_form()
+        return context
+
     def form_valid(self, form):
         question = form.save(commit=False)
         question.user = self.request.user
@@ -126,6 +138,11 @@ class QuestionCreateView(LoginRequiredMixin, CreateView):
         tags = form.cleaned_data['tags']
         for tag in tags:
             QuestionTag.objects.create(question=question, tag=tag)
+
+        # Optionally, associate the user_profile with the question if needed
+        user_profile = get_object_or_404(Profile, user=self.request.user)
+        question.user_profile = user_profile
+        question.save()
 
         return super().form_valid(form)
 
@@ -137,6 +154,11 @@ class TagListView(ListView):
     model = Tag
     template_name = 'tags/tag_list.html'
     context_object_name = 'tags'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_profile'] = get_object_or_404(Profile, user=self.request.user)
+        return context
 
 class VoteQuestionView(View):
     def post(self, request, question_id, vote_type):
@@ -194,7 +216,12 @@ class EditQuestionView(UpdateView):
     def form_valid(self, form):
         # Save the form and redirect to the question detail page
         self.object = form.save()
-        return redirect('questions:question_detail', pk=self.object.pk)  # Replace with your detail view name
+        return redirect('questions:question_detail', pk=self.object.pk)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_profile'] = get_object_or_404(Profile, user=self.request.user)
+        return context
 
 class DeleteQuestionView(View):
     template_name = 'questions/confirm_delete.html'
@@ -203,7 +230,9 @@ class DeleteQuestionView(View):
         question = get_object_or_404(Question, pk=pk)
         if question.user != request.user:
             return HttpResponseForbidden("You are not allowed to delete this question.")
-        return render(request, self.template_name, {'question': question})
+
+        user_profile = get_object_or_404(Profile, user=request.user)
+        return render(request, self.template_name, {'question': question, 'user_profile': user_profile})
 
     def post(self, request, pk):
         question = get_object_or_404(Question, pk=pk)
@@ -228,6 +257,7 @@ class EditAnswerView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['question'] = self.object.question
+        context['user_profile'] = get_object_or_404(Profile, user=self.request.user)
         return context
 
 class DeleteAnswerView(View):
@@ -237,7 +267,9 @@ class DeleteAnswerView(View):
         answer = get_object_or_404(Answer, pk=pk)
         if answer.user != request.user:
             return HttpResponseForbidden("You are not allowed to delete this question.")
-        return render(request, self.template_name, {'question': answer})
+
+        user_profile = get_object_or_404(Profile, user=request.user)
+        return render(request, self.template_name, {'answer': answer, 'user_profile': user_profile})
 
     def post(self, request, pk):
         answer = get_object_or_404(Answer, pk=pk)
@@ -255,7 +287,8 @@ class DeleteCommentView(View):
         if comment.user != request.user:
             return HttpResponseForbidden("You are not allowed to delete this comment.")
 
-        return render(request, self.template_name, {'comment': comment})
+        user_profile = get_object_or_404(Profile, user=request.user)
+        return render(request, self.template_name, {'comment': comment, 'user_profile': user_profile})
 
     def post(self, request, pk):
         comment = get_object_or_404(Comment, pk=pk)
@@ -272,3 +305,8 @@ class DeleteCommentView(View):
             comment.delete()
             return redirect('questions:question_detail', pk=question.pk)
         return HttpResponseForbidden("Invalid comment association.")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_profile'] = get_object_or_404(Profile, user=self.request.user)
+        return context

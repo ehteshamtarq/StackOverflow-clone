@@ -1,13 +1,6 @@
 from questions.models import Question, Answer, Vote
 
 def calculate_reputation(user):
-    """
-    Calculate the reputation of a user based on:
-    - +20 for each question asked
-    - +10 for each answer given
-    - -2 for each downvote
-    - +5 for each upvote
-    """
     reputation = 0
 
     reputation += Question.objects.filter(user=user).count() * 20

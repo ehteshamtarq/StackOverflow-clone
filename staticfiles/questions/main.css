@@ -412,16 +412,6 @@ a{
         margin-bottom: 4px;
     }
 
-    .block{
-        width: 100%;
-    }
-
-    .block h2 a {
-        color: black;
-        font-weight: 400;
-        font-size: 2rem;
-    }
-
     #markdown-content{
         background-color: #fcfcfc;
         padding: 10px;

@@ -1,8 +1,35 @@
-{% extends 'questions/base.html' %}
+{% extends 'user/base.html' %}
 
 {% block content %}
-    <div class="question-list-section">
-        <div class="question-list-heading">
+
+    <main role="main" class="container main-contain">
+      <div class="two-section row flex">
+        <div class="sidebar">
+            <div class="link">
+                <a class="home" href="{% url 'user:main' %}" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/home.svg' %}" alt="Home">
+                    Home
+                </a>
+            </div>
+            <div class="link">
+                <a href="{% url 'questions:question_list' %}" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/question.svg' %}" alt="Questions">
+                    Questions
+                </a>
+            </div>
+            <div class="link">
+                <a href="{% url 'questions:tag_list' %}" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/tags.svg' %}" alt="Tags">
+                    Tags
+                </a>
+            </div>
+        </div>
+        <div class="mainpage">
+                <div class="questions-list-section">
+                <div class="question-list-heading">
             <div class="question-list-heading-left">
             <div class="newest-question">
                 Newest Questions
@@ -12,10 +39,8 @@
             <a class="ask-question" href="{% url 'questions:question_create' %}">Ask Questions</a>
         </div>
         </div>
-        <div class="total-questions">{{ total_questions }} Questions</div>
-        <hr>
-
-        <div class="question-list">
+                <div class="total-questions">{{ total_questions }} Questions</div>
+                <div class="question-list">
             {% for question in questions %}
                 <div class="latest-post-box">
                     <div class="votes-answer-stats">
@@ -28,7 +53,7 @@
                         <p class="description">{{ question.body_clean |slice:":200"  }}</p>
                         <div class="tags">
                             {% for tag in question.tags.all %}
-                              <a class="tags-button" href="{% url 'user:register' %}">{{tag.tag.name}}</a>
+                                <a href="#" class="tags-button encoded-tag" data-tag="{{ tag.tag.name }}">{{ tag.tag.name }}</a>
                             {% endfor %}
                         </div>
                     </div>
@@ -56,11 +81,23 @@
 
     {% endif %}
         </div>
-
-
     </div>
 
+        </div>
+      </div>
+    </main>
+<script>
+    document.querySelectorAll('.encoded-tag').forEach(function(link) {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();  // Prevent default link behavior
 
+            // Get the tag name and encode it
+            const tagName = encodeURIComponent('[' + link.getAttribute('data-tag') + ']');
+            const url = `http://localhost:8000/search/?query=${tagName}`;
 
-
+            // Redirect to the encoded URL
+            window.location.href = url;
+        });
+    });
+</script>
 {% endblock %}

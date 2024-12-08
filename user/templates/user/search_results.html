@@ -1,34 +1,82 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Results</title>
-</head>
-<body>
-    <form method="get" action="{% url 'user:search_view' %}">
-        <input type="text" name="query" placeholder="Search..." value="{{ query }}">
-        <button type="submit">Search</button>
-    </form>
-
-    <h1>Search Results</h1>
-    {% if questions %}
-        <ul>
+{% extends "user/base.html" %}
+{% block content %}
+ <main role="main" class="container main-contain">
+      <div class="two-section row flex">
+        <div class="sidebar">
+            <div class="link">
+                <a class="home" href="{% url 'user:main' %}" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/home.svg' %}" alt="Home">
+                    Home
+                </a>
+            </div>
+            <div class="link">
+                <a href="{% url 'questions:question_list' %}" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/question.svg' %}" alt="Questions">
+                    Questions
+                </a>
+            </div>
+            <div class="link">
+                <a href="{% url 'questions:tag_list' %}" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/tags.svg' %}" alt="Tags">
+                    Tags
+                </a>
+            </div>
+        </div>
+        <div class="mainpage">
+            <h2 class="heading">Search Results</h2>
+            <div class="query">
+                <p>Results for {{ query }}</p>
+            </div>
             {% for question in questions %}
-                <li>
-                    <h2>{{ question.title }}</h2>
-                    <p>{{ question.body|truncatewords:20 }}</p>
-                    <strong>Tags:</strong>
-                    <ul>
-                        {% for tag in question.questiontag_set.all %}
-                            <li>{{ tag.tag.name }}</li>
-                        {% endfor %}
-                    </ul>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No results found for "{{ query }}"</p>
-    {% endif %}
-</body>
-</html>
+                <div class="latest-post-box">
+                    <div class="votes-answer-stats">
+                        <div class="votes"> 0 votes</div>
+                        <div class="answer"> {{ question.answer_count }} answers</div>
+                        <div class="view"> {{ question.views }} views</div>
+                    </div>
+                    <div class="post-question">
+                        <a class = "question" href="{% url 'questions:question_detail' question.id %}">{{ question.title }}</a>
+                        <div class="description">{{ question.body_clean |slice:":200"  }}</div>
+                        <div class="tags">
+                            {% for tag in question.tags.all %}
+                                <a href="#" class="tags-button encoded-tag" data-tag="{{ tag.tag.name }}">{{ tag.tag.name }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+        </div>
+      </div>
+ </main>
+<style>
+    .heading{
+        font-size: 24px;
+        font-weight: 500;
+    }
+
+    .query p{
+        margin-top: 20px;
+        margin-bottom: 20px;
+        font-weight: 500;
+        font-size: 12px;
+        color: gray;
+    }
+</style>
+<script>
+    document.querySelectorAll('.encoded-tag').forEach(function(link) {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();  // Prevent default link behavior
+
+            // Get the tag name and encode it
+            const tagName = encodeURIComponent('[' + link.getAttribute('data-tag') + ']');
+            const url = `http://localhost:8000/search/?query=${tagName}`;
+
+            // Redirect to the encoded URL
+            window.location.href = url;
+        });
+    });
+</script>
+{% endblock content %}

@@ -1,4 +1,4 @@
-{% extends "questions/base.html" %}
+{% extends "user/base.html" %}
 
 {% block content %}
   <h3 class="ask-question-heading">Ask a New Question</h3>
@@ -21,13 +21,20 @@
       </div>
     </div>
 
-     <div class="form-group">
-      <label>Select Tags</label>
-         {{ form.tags }}
+   <div class="form-group">
+    <label>Select Tags</label>
+    <div id="id_tags">
+        {% for tag in form.tags %}
+            <label>
+                {{ tag }}
+            </label>
+        {% endfor %}
     </div>
+</div>
+
 
     <hr/>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="submit btn btn-primary">Submit</button>
   </form>
     </div>
     <div class="question-section-right">
@@ -36,17 +43,23 @@
 </div>
 
 <style>
-    .mdEdit {
-          position: relative;
-          display: flex;
-          flex-direction: column;
-        }
-
-    .mdEdit textarea {
-          font-family: consolas, monospace;
-          resize: none;
+    .container a{
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
+    nav{
+        padding: 0 !important;
+        margin: 0 !important    ;
+    }
+
+    .logout{
+    margin: 0 !important;
+    }
+
+    nav .contain{
+        align-items: start;
+    }
     #preview {
           padding: 1em;
           border: 1px solid #ccc;
@@ -57,10 +70,6 @@
           word-break: break-word; /* Ensure long words break onto a new line */
           overflow-wrap: break-word; /* Helps to break long words or URLs */
           max-width: 100%; /* Prevents the preview from overflowing */
-    }
-
-    .mdEdit input, .mdEdit textarea {
-        width: 100%;
     }
 
     .submit {
@@ -101,7 +110,7 @@
 
     .inline-code {
           font-family: 'Consolas', monospace;
-          background-color: #f1f1f1;
+          background-color: #E3E6E8;
           padding: 0.2em 0.4em;
           border-radius: 4px;
           color: #333;
@@ -109,7 +118,7 @@
 
     .code-block {
           font-family: 'Consolas', monospace;
-          background-color: #E7E7E7;
+          background-color: #F6F6F6;
           color: #333;
           padding: 3px 3px;
           border-radius: 4px;
@@ -122,7 +131,7 @@
           margin: 0;
           padding: 10px;
           overflow: auto;
-          background-color:  #E7E7E7;
+          background-color:  #F6F6F6;
     }
 
     .ask-question-heading{
@@ -134,6 +143,10 @@
     #id_tags{
             display:grid !important;
             grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    button{
+        margin-bottom: 30px;
     }
 
 </style>

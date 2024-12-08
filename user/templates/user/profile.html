@@ -1,59 +1,97 @@
 {% extends "user/base.html" %}
 
 {% block content %}
-
-<div class="profile-section">
-  <div class="profile-info-section">
-    <div class="profile-info-image-left">
-        <div class="profile-image-left">
-          {% if profile.image %}
-          <img src="{{ profile.image.url }}" alt="Profile Image">
-          {% endif %}
+   <main role="main" class="container main-contain">
+      <div class="two-section row flex">
+        <div class="sidebar">
+            <div class="link">
+                <a class="home" href="{% url 'user:main' %}" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/home.svg' %}" alt="Home">
+                    Home
+                </a>
+            </div>
+            <div class="link">
+                <a href="{% url 'questions:question_list' %}" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/question.svg' %}" alt="Questions">
+                    Questions
+                </a>
+            </div>
+            <div class="link">
+                <a href="{% url 'questions:tag_list' %}" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/tags.svg' %}" alt="Tags">
+                    Tags
+                </a>
+            </div>
         </div>
-        <div class="profile-info-right">
-          {% if profile.name %}
-            <h3>{{ profile.name }}</h3>
-          {% else %}
-            <h3>{{ profile_user.username }}</h3>
-          {% endif %}
+        <div class="mainpage">
+          <div class="profiles-section">
+            <div class="profile-info-section">
+              <div class="profile-info-image-left">
+                  <div class="profile-image-left">
+                    {% if profile.image %}
+                    <img src="{{ profile.image.url }}" alt="Profile Image">
+                    {% endif %}
+                  </div>
+                  <div class="profile-info-right">
+                    {% if profile.name %}
+                      <h3>{{ profile.name }}</h3>
+                    {% else %}
+                      <h3>{{ profile_user.username }}</h3>
+                    {% endif %}
 
-          {% if profile.title %}
-            <h5 class="title">{{ profile.title }}</h5>
-          {% else %}
-          {% endif %}
+                    {% if profile.title %}
+                      <h5 class="title">{{ profile.title }}</h5>
+                    {% else %}
+                    {% endif %}
 
+                  </div>
+              </div>
+              <div class="edit-profile-button-right">
+                  {% if request.user == profile.user %}
+                     <a href="{% url 'user:edit_profile' username=user.username %}" class="edit-button btn btn-primary">Edit Profile</a>
+                  {% endif %}
+              </div>
+            </div>
+            <div class="profile-stats-about">
+              <div class="profile-stats-left">
+                <div class="profile-stats reputation"><div class="stats">{{ reputation }}</div> <div class="parameter">reputation</div></div>
+                <div class="profile-stats comments"><div class="stats">{{ comment_count }}</div> <div class="parameter">comments</div></div>
+                <div class="profile-stats answers"><div class="stats">{{ answer_count }}</div> <div class="parameter">answers</div></div>
+                <div class="profile-stats questions"><div class="stats">{{ question_count }}</div> <div class="parameter">questions</div></div>
+              </div>
+              <div class="profile-about-right">
+                <div class="profile-bio">
+                  <h4>About</h4>
+                  {% if profile.bio %}
+                    <p> {{ profile.bio }}</p>
+                  {% else %}
+                    <p> No Bio </p>
+                  {% endif %}
+                </div>
+              </div>
+              </div>
+          </div>
 
         </div>
-    </div>
-    <div class="edit-profile-button-right">
-        {% if request.user == profile.user %}
-            <a class=" edit-button btn btn-primary">Edit Profile</a>
-        {% endif %}
-    </div>
-  </div>
-  <div class="profile-stats-about">
-    <div class="profile-stats-left">
-      <div class="profile-stats reputation"><div class="stats">{{ reputation }}</div> <div class="parameter">reputation</div></div>
-      <div class="profile-stats comments"><div class="stats">{{ comment_count }}</div> <div class="parameter">comments</div></div>
-      <div class="profile-stats answers"><div class="stats">{{ answer_count }}</div> <div class="parameter">answers</div></div>
-      <div class="profile-stats questions"><div class="stats">{{ question_count }}</div> <div class="parameter">questions</div></div>
-    </div>
-    <div class="profile-about-right">
-      <div class="profile-bio">
-        <h4>About</h4>
-        {% if profile.bio %}
-          <p> {{ profile.bio }}</p>
-        {% else %}
-          <p> No Bio </p>
-        {% endif %}
       </div>
-    </div>
-    </div>
-</div>
+    </main>
 
-<style  >
-  .profile-section{
-    margin-top: 30px;
+
+
+<style>
+
+  .main-contain{
+    margin-top: 50px;
+  }
+
+  .mainpage{
+    width: 70%;
+  }
+  .two-section{
+    gap: 50px;
   }
 
   .block{
@@ -79,24 +117,28 @@
   .profile-stats-about{
     display:flex;
     flex-direction: row;
-    gap: 50px;
+    gap: 30px;
     margin-top: 50px;
   }
 
   .profile-stats-left{
-    width: 250px;
-    height: 200px;
-    border: 1px solid #636B74 !important;
+    padding-top: 10px;
+    padding-left: 5px;
+    width: 220px;
+    height: 140px;
+    border: 1px solid #d6d9dc !important;
     border-radius: 5px;
-    padding: 10px;
-    padding-left: 30px;
-    padding-top: 30px;
+    padding-left: 15px;
     display:flex;
     flex-wrap: wrap;
-    justify-content: center;
+    gap-row: 0;
   }
 
-  .profile-stats-left div{
+  .profile-bio p{
+    font-size: 15px;
+  }
+
+  .profile-stats{
     width: 50%;
   }
 
@@ -110,35 +152,15 @@
     color: #636B74;
   }
 
-  .profile-activity-section{
-    margin-top: 50px;
-    margin-left: 300px;
-    margin-bottom: 30px;
-  }
-
   .profile-activity{
     display:flex;
     flex-direction: row;
   }
 
-  .profile-activity div{
-    margin-top: 30px;
-    width: 50%;
-  }
-
-   .profile-activity div h6{
-    font-weight: 400;
-    font-size: 20px;
-  }
-
-  .title{
-    font-weight: 400;
-    color: #636B74;
-  }
-
-  img{
-    width: 150px !important;
+  .profile-image-left img{
+    width: 120px !important;
     height: auto;
+    border-radius: 10px;
   }
 
   .edit-button{

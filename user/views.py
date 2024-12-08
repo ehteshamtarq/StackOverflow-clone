@@ -37,33 +37,34 @@ def main(request):
 
     if request.user.is_authenticated:
         reputation = calculate_reputation(request.user)
+        user_profile = request.user.profile
+
     else:
         reputation = 0
+        user_profile = None
 
     for question in latest_questions:
         question.body_clean = markdown2.markdown(question.body)
 
-    return render(request, 'user/main.html', {'latest_questions': latest_questions, 'reputation': reputation})
+    return render(request, 'user/main.html', {'latest_questions': latest_questions, 'reputation': reputation, 'user_profile': user_profile})
 
-def profile(request, user_id=None):
+def profile(request, username=None):
+    if username is None:
 
-    if user_id is None:
+        if not request.user.is_authenticated:
+            raise Http404("User not found.")
         user_profile = request.user.profile
         profile_user = request.user
     else:
-        try:
-            profile_user = User.objects.get(id=user_id)
-            user_profile = profile_user.profile
-        except User.DoesNotExist:
-            raise Http404("User not found.")
+
+        profile_user = get_object_or_404(User, username=username)
+        user_profile = profile_user.profile
 
     reputation = calculate_reputation(profile_user)
     comment_count = Comment.objects.filter(user=profile_user).count()
     question_count = Question.objects.filter(user=profile_user).count()
     answer_count = Answer.objects.filter(user=profile_user).count()
-
     answered_questions = Question.objects.filter(answers__user=profile_user).distinct()
-
     user_questions = Question.objects.filter(user=profile_user)
 
     context = {
@@ -75,6 +76,7 @@ def profile(request, user_id=None):
         'answered_questions': answered_questions,
         'user_questions': user_questions,
         'reputation': reputation,
+        'user_profile': user_profile
     }
 
     return render(request, 'user/profile.html', context)
@@ -93,7 +95,13 @@ def search_view(request):
         else:
             questions = questions.filter(
                 Q(title__icontains=query) | Q(body__icontains=query)).distinct()
-    return render(request, 'user/search_results.html', {'questions': questions, 'query': query})
+
+    user_profile = request.user.profile
+
+    for question in questions:
+        question.body_clean = markdown2.markdown(question.body)
+
+    return render(request, 'user/search_results.html', {'questions': questions, 'query': query, 'user_profile': user_profile})
 
 @login_required
 def edit_profile(request, username):
@@ -111,15 +119,17 @@ def edit_profile(request, username):
             u_form.save()
             p_form.save()
             messages.success(request, f'Your account has been updated!')
-            return redirect('profile')
+            return redirect('user:profile', username=username)
 
     else:
         u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileUpdateForm(instance=request.user.profile)
 
+    user_profile = request.user.profile
     context = {
         'u_form': u_form,
-        'p_form': p_form
+        'p_form': p_form,
+        'user_profile': user_profile
     }
 
     return render(request, 'user/edit-profile.html', context)

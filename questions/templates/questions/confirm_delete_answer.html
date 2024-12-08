@@ -1,12 +1,115 @@
-{% extends "questions/base.html" %}
-
+{% extends "user/base.html" %}
 {% block content %}
-  <h2>Confirm Delete</h2>
-  <p>Are you sure you want to delete this Answer?</p>
-  <p><strong>{{ question.body }}</strong></p>
-  <form method="post">
-    {% csrf_token %}
-    <button type="submit">Yes, delete</button>
-    <a href="{% url 'questions:question_list' %}">Cancel</a>
-  </form>
-{% endblock %}
+    <main role="main" class="container main-contain">
+      <div class="two-section row flex">
+        <div class="sidebar">
+            <div class="link">
+                <a class="home" href="{% url 'user:main' %}" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/home.svg' %}" alt="Home">
+                    Home
+                </a>
+            </div>
+            <div class="link">
+                <a href="{% url 'questions:question_list' %}" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/question.svg' %}" alt="Questions">
+                    Questions
+                </a>
+            </div>
+            <div class="link">
+                <a href="{% url 'questions:tag_list' %}" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/tags.svg' %}" alt="Tags">
+                    Tags
+                </a>
+            </div>
+        </div>
+        <div class="mainpage delete-answer">
+            <h2>Confirm Delete</h2>
+            <p>Are you sure you want to delete this Answer?</p>
+             <div id="markdown-content1" data-markdown="{{ answer.body }}"></div>
+            <form method="post">
+              {% csrf_token %}
+              <button class="btn btn-danger delete-button"  type="submit">Yes, delete</button>
+              <a href="{% url 'questions:question_list' %}">Cancel</a>
+            </form>
+        </div>
+      </div>
+    </main>
+<style>
+  .main-contain{
+    margin-bottom: 20px;
+    margin-top: 50px;
+  }
+  .delete-answer h2{
+    font-size: 24px;
+  }
+
+  .delete-answer{
+    width: 60%;
+  }
+
+  .answer-body{
+    font-size: 14px;
+  }
+
+  .delete-button{
+    margin-right: 20px;
+  }
+
+  #markdown-content1{
+    margin-bottom: 20px;
+  }
+
+</style>
+<script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const markdownElement = document.getElementById("markdown-content1");
+
+        if (markdownElement) {
+            const markdownText = markdownElement.getAttribute("data-markdown");
+
+            // Simple Markdown Parser
+            function parseMarkdown(markdown) {
+                markdown = markdown.replace(/```([\s\S]*?)```/g, '<pre><code class="code-block">$1</code></pre>');
+
+                // Convert headings (## Heading)
+                markdown = markdown.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+                markdown = markdown.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+                // Convert bold (**bold**)
+                markdown = markdown.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+                // Convert italic (*italic*)
+                markdown = markdown.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+                // Convert unordered lists (- item)
+                markdown = markdown.replace(/^- (.+)$/gm, '<li>$1</li>');
+                markdown = markdown.replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>');
+
+                // Convert links ([text](url))
+                markdown = markdown.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>');
+                markdown = markdown.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')  // Bold
+                     .replace(/\*(.*?)\*/g, '<i>$1</i>')  // Italic
+                     .replace(/_(.*?)_/g, '<i>$1</i>')   // Italic (underscore version)
+                     .replace(/~~(.*?)~~/g, '<del>$1</del>'); // Strikethrough
+
+                markdown = markdown.replace(/`(.*?)`/g, '<code class="inline-code">$1</code>');
+                markdown = markdown.replace(/\n/g, '<br>');
+                markdown = markdown.replace(/  /g, '&nbsp;&nbsp;');
+
+                return markdown;
+            }
+
+            // Parse Markdown to HTML
+            const htmlContent = parseMarkdown(markdownText);
+
+            // Set the rendered HTML content
+            markdownElement.innerHTML = htmlContent;
+        }
+    });
+
+</script>
+
+{% endblock content %}

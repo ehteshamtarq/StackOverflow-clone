@@ -1,9 +1,8 @@
-{% extends "questions/base.html" %}
+{% extends "user/base.html" %}
 
 {% block content %}
 
-
-<main role="main" class="container main-contain">
+<main role="main" class="container question-detail-container main-contain">
   <div class="row flex">
     <div class="col-md-2 sidebar">
         <div class="link">
@@ -30,18 +29,15 @@
     </div>
     <div class="col-md-9 mainpage">
         <div class="heading-title">
-            <h2><a href="{% url 'questions:question_detail' pk=question.pk %}">{{ question.title }}</a></h2>
+            <h2 class="heading"><a href="{% url 'questions:question_detail' pk=question.pk %}">{{ question.title }}</a></h2>
             <div><a class="ask-question" href="{% url 'questions:question_create' %}">Ask Questions</a></div>
         </div>
-
         <div class="votes-askedWhen">
             <p><span class="field-name">Asked</span> <span class="field-value">{{ question.created_at|date:"d-m-Y" }}</span></p>
             <p><span class="field-name">Modified</span> <span class="field-value">{{ question.updated_at |date:"d-m-Y" }}</span></p>
             <p><span class="field-name">Viewed</span> <span class="field-value">{{ question.views }} times</span></p>
         </div>
-
         <hr class="after-heading">
-
         <div class="question-section-and-question-vote-section">
             <div class="question-vote-section-left">
                 <div class="votes">
@@ -58,51 +54,71 @@
             </div>
             <div class="question-content-section-right">
                 <div id="markdown-content" data-markdown="{{ question.body }}"></div>
+                <div class="tags-div">
+                    <div class="tags">
+                    {% for tag in tags %}
+                        <a href="#" class="tags-button encoded-tag" data-tag="{{ tag.tag }}">{{ tag.tag }}</a>
 
-                <div class="tags-username">
-            <div class="tags">
-        {% for tag in tags %}
-                <a class="tags-button" href="{% url 'questions:tag_list' %}">{{ tag.tag }}</a>
-        {% empty %}
-            <p></p>
-        {% endfor %}
-        </div>
-            <div class="username">{{username}}</div>
-        </div>
-                {% if request.user == question.user %}
-  <a href="{% url 'questions:edit_question' question.pk %}">Edit</a>
-  <a href="{% url 'questions:delete_question' question.pk %}">Delete</a>
-{% endif %}
-
-
-                <button class="comment-btn toggle-button">Add Comment</button>
-                <div class="comment-box mt-3" style="display: none;">
-                 <form method="post">
-                {% csrf_token %}
-                {{ comment_form.as_p }}
-                <input type="hidden" class="comment-input" name="target_type" value="question">
-                <button  class="btn btn-success mt-2" type="submit" name="comment_submit">Submit Comment</button>
-            </form>
-        </div>
-
+                    {% endfor %}
+                </div>
+                </div>
+                <div class="edit-delete-button-username">
+                    <div class="edit-delete-button">
+                         {% if request.user == question.user %}
+                              <a href="{% url 'questions:edit_question' question.pk %}">Edit</a>
+                              <a href="{% url 'questions:delete_question' question.pk %}">Delete</a>
+                        {% endif %}
+                    </div>
+                    <div class="username">
+                        <div class="username-image">
+                            <a class="profile"  href="{% url 'user:profile' username%}">
+                                <div class="user-image">
+                                    {% load static %}
+                                        {% if user_profile.image %}
+                                        <img class="profile-image" src="{{ question_owner_profile.image.url }}" alt="{{ user_profile.user.username }}'s profile picture">
+                                            {% else %}
+                                        <img class="profile-image" src="{% static 'images/default-profile.png' %}" alt="Default profile picture">
+                                    {% endif %}
+                                </div>
+                                <div class="username-reputation">
+                                <div class="username">{{ username }}</div>
+                                <div class="reputations">{{ reputation }} reputations</div>
+                            </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
                 {% if comments %}
-                <div class="comment-section">
-            <hr>
-            {% for comment in comments %}
-                <div class="comment-body">{{ comment.body }}</div>
-                <div class="comment-owner"><p>{{ comment.user.username }}</p></div>
-                    {% if request.user == comment.user %}
-  <a href="{% url 'questions:delete_comment' comment.pk %}">Delete</a>
-{% endif %}
-                <hr>
-            {% empty %}
-\            {% endfor %}
-        </div>
+                    <div class="comment-section">
+                    <hr>
+                    {% for comment in comments %}
+                    <div class="comment-body">
+                        <p>{{ comment.body }} - <span><a class="comment-username"  href="{% url 'user:profile' username%}">{{ comment.user.username }}</a></span>
+                        {% if request.user == comment.user %}
+                        <a class="delete-comment" href="{% url 'questions:delete_comment' comment.pk %}">Delete</a>
+                        {% endif %}
+                        </p>
+                    </div>
+
+
+                    <hr>
+                    {% empty %}
+                   {% endfor %}
+                </div>
                 {% endif %}
 
-            </div>
-        </div>
+                    <button class="comment-btn toggle-button">Add a Comment</button>
+                    <div class="comment-box mt-3" style="display: none;">
+                 <form method="post">
+                    {% csrf_token %}
+                    {{ comment_form.as_p }}
+                    <input type="hidden" class="comment-input" name="target_type" value="question">
+                    <button  class="btn btn-success mt-2" type="submit" name="comment_submit">Submit Comment</button>
+                </form>
+                </div>
+                </div>
 
+        </div>
         <hr>
 
         <h4 class="answer-count-heading">
@@ -117,14 +133,36 @@
         {% for answer in answers %}
             <div>
                  <div id="markdown-content1" data-markdown="{{ answer.body }}"></div>
-                <div class="answer-username-created">
-                    <div>{{ answer.user.username }}</div>
-                    <div>{{ answer.created_at |date:"d-m-Y" }}</div>
+
+                <div class="edit-delete-button-username">
+                    <div class="edit-delete-button">
+                         {% if request.user == answer.user %}
+                             <a href="{% url 'questions:edit_answer' answer.pk %}">Edit</a>
+                            <a href="{% url 'questions:delete_answer' answer.pk %}">Delete</a>
+                        {% endif %}
+                    </div>
+                    <div class="username">
+                        <div class="username-image">
+                            <a class="profile"  href="{% url 'user:profile' answer.user.username %}">
+                                <div class="user-image">
+                                    {% load static %}
+                                        {% if user_profile.image %}
+                                        <img class="profile-image" src="{{ answer.profile.image.url }}" alt="{{ answer.user.username }}'s profile picture">
+                                            {% else %}
+                                        <img class="profile-image" src="{% static 'images/default-profile.png' %}" alt="Default profile picture">
+                                    {% endif %}
+                                </div>
+                                <div class="username-reputation">
+                                <div class="username">{{ answer.user.username }}</div>
+                                <div class="reputations">{{ answer.reputation }} reputations</div>
+                            </div>
+                            </a>
+                        </div>
+
+                    </div>
                 </div>
-                {% if request.user == answer.user %}
-  <a href="{% url 'questions:edit_answer' answer.pk %}">Edit</a>
-  <a href="{% url 'questions:delete_answer' answer.pk %}">Delete</a>
-{% endif %}
+
+
                 <button class="comment-btn toggle-button">Add Comment</button>
                 <div class="comment-box mt-3" style="display: none;">
                     <form method="post">
@@ -140,11 +178,10 @@
                 <div class="comment-section">
                 <hr>
                 {% for comment in answer.comments %}
-                    <div class="comment-body">{{ comment.body }}</div>
-                    <div class="comment-owner"><p>{{ comment.user.username }}</p></div>
+                    <div class="comment-body"><p>{{ comment.body }} - {{ comment.user.username }}</p></div>
                     {% if request.user == comment.user %}
-  <a href="{% url 'questions:delete_comment' comment.pk %}">Delete</a>
-{% endif %}
+                      <a href="{% url 'questions:delete_comment' comment.pk %}">Delete</a>
+                    {% endif %}
                     <hr>
                 {% empty %}
                 {% endfor %}
@@ -179,6 +216,331 @@
         </main>
 <style>
 
+    .username-image{
+        background-color: #EDF5FD;
+        padding-top: 6px;
+        padding-left: 6px;
+        padding-right: 20px;
+        padding-bottom: 6px;
+        border-radius: 5px;
+    }
+
+    .profile-image{
+        width: 35px;
+        border-radius: 5px;
+    }
+
+.heading-title {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.username-reputation div{
+    font-size: 14px;
+}
+
+.reputations{
+    color: black;
+    font-size: 12px !important;
+}
+
+.heading a{
+    font-size: 24px;
+    color: #3B4045;
+}
+
+#markdown-content {
+  padding: 10px;
+}
+
+.inline-code {
+  font-family: "Consolas", monospace;
+  background-color: <div id="E3E6E8"></div>;
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  color: #333;
+}
+
+.code-block {
+  font-family: "Consolas", monospace;
+  background-color: #F6F6F6;
+  color: #333;
+  padding: 3px 3px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+}
+
+
+pre {
+  margin: 0;
+  padding: 10px;
+  overflow: auto;
+  background-color: #F6F6F6
+}
+
+.votes-askedWhen {
+  margin-left: 10px;
+  display: flex;
+  gap: 20px;
+}
+
+.field-name {
+  color: gray;
+  font-size: 12px;
+}
+
+.field-value {
+  color: black;
+  font-size: 12px;
+}
+
+.ask-question {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: 14px !important;
+}
+
+.comment-btn {
+    margin-top: 0 !important;
+  margin-left: 30px;
+  background-color: white;
+  color: gray;
+  font-size: 13px;
+  outline: 0;
+  border: none;
+}
+
+.comment-btn:focus,
+.comment-btn:hover {
+  outline: none;
+  cursor: pointer;
+}
+
+.comment-box {
+  transition: opacity 0.3s ease, max-height 0.3s ease; /* Smooth transition */
+}
+
+.tags-button {
+  color: black;
+  font-size: 12px !important;
+  background: #e3e6e8;
+  padding: 5px;
+  border-radius: 5px;
+  transition: 0.3s ease-in;
+}
+
+.tags {
+  margin-left: 30px;
+  font-weight: 500;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.tags-button:hover {
+  color: black;
+  background-color: #aeb7bd;
+}
+
+.tags-div {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  gap: 200px;
+  margin-bottom: 30px;
+}
+
+.edit-delete-button-username {
+  width: 90%;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+  justify-content: space-between;
+}
+
+.username {
+  color: blue;
+}
+
+.comment-section {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  margin-left: 60px;
+  padding-top: 10px;
+}
+
+.comment-section hr {
+  margin-bottom: 5px;
+  color: black;
+}
+
+.comment-owner {
+    font-size: 14px;
+}
+
+.answer-username-created {
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+textarea {
+  padding: 10px;
+  height: auto;
+}
+
+.your-answer {
+  margin-bottom: 30px;
+}
+
+.answer-post-button {
+  color: white;
+  background-color: hsl(210, 77%, 46%);
+  color: white;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-radius: 5px;
+  transition: 0.3s ease-in;
+  border: none;
+  font-size: 14px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+.answer-section-left {
+  width: 70%;
+}
+
+.answer-section-right {
+  width: 25%;
+}
+
+.answer-section {
+  width: 130%;
+  display: flex;
+  flex-direction: row;
+}
+
+.answer-count-heading {
+  margin-bottom: 30px;
+}
+
+.heading-title h2 {
+  width: 85%;
+}
+
+.question-section-and-question-vote-section {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.question-vote-section-left .votes {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.vote-btn {
+  background-color: white;
+  padding: 5px 10px;
+  border: 1px solid #d6d9dc;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+.vote {
+  width: 15px;
+  opacity: 0.7;
+}
+
+#total_votes {
+  margin-left: 15px;
+}
+
+.question-content-section-right {
+  width: 150%;
+}
+
+.logo{
+    height: 30px;
+    width: auto;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+nav{
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.profile-img{
+    width: 25px !important;
+    height: 25px !important;
+}
+
+.register, .login{
+    padding: 6px;
+    font-size: 14px;
+}
+
+.mainpage{
+    width: 80%;
+}
+
+
+.welcome-message p{
+    font-size: 12px;
+}
+
+.welcome-message div{
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.reputation-box p{
+    font-size: 14px;
+}
+p a{
+    text-decoration: underline !important;
+}
+
+.interesting-post-section h4{
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.post-question a{
+    font-size: 17px;
+}
+
+.post-question div{
+    margin-top: 5px;
+    font-size: 12px;
+    margin-bottom: 5px;
+    padding-bottom: 10px;
+}
+
+.tags-button{
+    font-weight: 500;
+}
+
+.link a{
+    font-size: 14px;
+    padding: 0;
+    margin: 0;
+}
+
     .vote-btn{
         transition: 0.3s ease-in;
     }
@@ -196,8 +558,31 @@
 
     .vote-selected{
         filter: invert(1);
-        outline: 0;
+        outline: 0
+    }
+    .question-content-section-right{
+        width: 85%;
+    }
 
+    .question-content-section-right *{
+         word-wrap: break-word;
+        }
+
+
+    .question-detail-container{
+        margin-top: 30px;
+    }
+
+    .username-image a{
+        display:flex;
+        gap: 10px;
+        align-items: start;
+    }
+
+    .edit-delete-button a{
+        font-size: 14px;
+        color: gray;
+        margin-left: 3px;
     }
 </style>
 <script>
@@ -399,6 +784,65 @@ document.querySelectorAll('.vote-btn').forEach(button => {
             buttonVotes[1].classList.add('button-selected');
         }
 
+    });
+</script>
+ <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const markdownElement = document.getElementById("markdown-content");
+
+        if (markdownElement) {
+            const markdownText = markdownElement.getAttribute("data-markdown");
+
+            function parseMarkdown(markdown) {
+                markdown = markdown.replace(/```([\s\S]*?)```/g, '<pre><code class="code-block">$1</code></pre>');
+
+                markdown = markdown.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+                markdown = markdown.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+                markdown = markdown.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+                markdown = markdown.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+                markdown = markdown.replace(/^- (.+)$/gm, '<li>$1</li>');
+                markdown = markdown.replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>');
+
+                markdown = markdown.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>');
+                markdown = markdown.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')  // Bold
+                     .replace(/\*(.*?)\*/g, '<i>$1</i>')  // Italic
+                     .replace(/_(.*?)_/g, '<i>$1</i>')   // Italic (underscore version)
+                     .replace(/~~(.*?)~~/g, '<del>$1</del>'); // Strikethrough
+
+                markdown = markdown.replace(/`(.*?)`/g, '<code class="inline-code">$1</code>');
+                markdown = markdown.replace(/\n/g, '<br>');
+                markdown = markdown.replace(/  /g, '&nbsp;&nbsp;');
+
+                return markdown;
+            }
+
+            const htmlContent = parseMarkdown(markdownText);
+
+            markdownElement.innerHTML = htmlContent;
+        }
+    });
+
+</script>
+<script>
+    $(document).on('click', '.toggle-button', function() {
+        $(this).next('.comment-box').toggle();
+    });
+</script>
+<script>
+    document.querySelectorAll('.encoded-tag').forEach(function(link) {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();  // Prevent default link behavior
+
+            // Get the tag name and encode it
+            const tagName = encodeURIComponent('[' + link.getAttribute('data-tag') + ']');
+            const url = `http://localhost:8000/search/?query=${tagName}`;
+
+            // Redirect to the encoded URL
+            window.location.href = url;
+        });
     });
 </script>
 {% endblock %}

@@ -1,11 +1,145 @@
-{% extends "questions/base.html" %}
-
+{% extends "user/base.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
-  <h2>Edit Answer</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save Changes</button>
-    <a href="{% url 'questions:question_detail' question.pk %}">Cancel</a>
-  </form>
+    <main role="main" class="container main-contain">
+      <div class="two-section row flex">
+        <div class="sidebar">
+            <div class="link">
+                <a class="home" href="{% url 'user:main' %}" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/home.svg' %}" alt="Home">
+                    Home
+                </a>
+            </div>
+            <div class="link">
+                <a href="{% url 'questions:question_list' %}" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/question.svg' %}" alt="Questions">
+                    Questions
+                </a>
+            </div>
+            <div class="link">
+                <a href="{% url 'questions:tag_list' %}" >
+                    {% load static %}
+                    <img class="icon" src="{% static 'images/tags.svg' %}" alt="Tags">
+                    Tags
+                </a>
+            </div>
+        </div>
+        <div class="mainpage">
+          <div class="heading">
+            <h3>Edit Answer</h3>
+          </div>
+           <div class="answer-section">
+             <div class="answer-edit-section-left">
+            <form method="post">
+              {% csrf_token %}
+                {{ form | crispy}}
+              <button class="btn btn-success answer-submit" type="submit">Save Changes</button>
+              <a href="{% url 'questions:question_detail' question.pk %}">Cancel</a>
+            </form>
+             </div>
+             <div class="answer-edit-section-right">
+                <div id="preview-answer"></div>
+             </div>
+           </div>
+
+        </div>
+      </div>
+    </main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const textarea = document.getElementById('id_body');
+
+        textarea.addEventListener('input', function () {
+          this.style.height = 'auto';
+          this.style.height = `${this.scrollHeight}px`;
+        });
+    });
+</script>
+<script>
+   document.addEventListener('DOMContentLoaded', function () {
+    const bodyTextarea = document.getElementById('id_body');
+    const previewDiv = document.getElementById('preview-answer');
+
+    function parseMarkdown(text) {
+        let parsed = text;
+
+        // Parse code blocks
+        parsed = parsed.replace(/```([\s\S]*?)```/g, '<pre><code class="code-block">$1</code></pre>');
+
+        // Parse headings
+        parsed = parsed.replace(/^###### (.*)/gm, '<h6>$1</h6>')
+            .replace(/^##### (.*)/gm, '<h5>$1</h5>')
+            .replace(/^#### (.*)/gm, '<h4>$1</h4>')
+            .replace(/^### (.*)/gm, '<h3>$1</h3>')
+            .replace(/^## (.*)/gm, '<h2>$1</h2>')
+            .replace(/^# (.*)/gm, '<h1>$1</h1>');
+
+        // Parse images
+        parsed = parsed.replace(/!\[([^\]]+)]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
+
+        // Parse links
+        parsed = parsed.replace(/\[([^\]]+)]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+
+        // Parse formatting (bold, italic, strikethrough, inline code)
+        parsed = parsed.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')  // Bold
+            .replace(/\*(.*?)\*/g, '<i>$1</i>')  // Italic
+            .replace(/_(.*?)_/g, '<i>$1</i>')   // Italic (underscore version)
+            .replace(/~~(.*?)~~/g, '<del>$1</del>') // Strikethrough
+            .replace(/`(.*?)`/g, '<code class="inline-code">$1</code>');
+
+        // Parse line breaks and spaces
+        parsed = parsed.replace(/\n/g, '<br>')
+            .replace(/  /g, '&nbsp;&nbsp;');
+
+        return parsed;
+    }
+
+    function updatePreview() {
+        const bodyText = bodyTextarea.value.trim();
+
+        let previewHtml = ``;
+
+        previewHtml += parseMarkdown(bodyText);
+
+        previewDiv.innerHTML = previewHtml;
+    }
+
+    // Update preview on load
+    updatePreview();
+
+    // Update preview on input
+    bodyTextarea.addEventListener('input', updatePreview);
+});
+
+</script>
+<style>
+    .main-contain{
+    margin-bottom: 20px;
+  }
+
+  .heading{
+    font-size: 24px !important;
+    margin-bottom: 20px;
+  }
+
+  .answer-section{
+  gap: 50px;
+  }
+
+  .answer-edit-section-right{
+    width: 26%;
+  }
+
+  .answer-edit-section-left{
+  width: 40%;
+  }
+
+  .answer-submit{
+    margin-right: 20px;
+  }
+</style>
 {% endblock %}
+

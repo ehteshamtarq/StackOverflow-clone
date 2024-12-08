@@ -43,7 +43,7 @@
         <div class="container contain">
           <a href="{% url 'user:main' %}"  >
              {% load static %}
-           <img src="{% static 'images/Stack_Overflow-Logo.png' %}" alt="Stack Overflow Logo">
+           <img class='logo' src="{% static 'images/Stack_Overflow-Logo.png' %}" alt="Stack Overflow Logo">
         </a>
           <form method="get" action="{% url 'user:search_view' %}" >
             <input id = 'search' type="text" name="query" placeholder="Search..." value="{{ query }}">
@@ -51,7 +51,14 @@
 
           {% if user.is_authenticated %}
               <div class="profile-logout">
-                 <a class="profile"  >Profile</a>
+                 <a class="profile"  href="{% url 'user:profile' user.username%}">
+                     {% load static %}
+                     {% if user_profile.image %}
+                        <img class="profile-img" src="{{ user_profile.image.url }}" alt="{{ user_profile.user.username }}'s profile picture">
+                            {% else %}
+                        <img class="profile-img" src="{% static 'images/default-profile.png' %}" alt="Default profile picture">
+                        {% endif %}
+                 </a>
                   <form  class="logout-form" action="{% url 'user:logout' %}" method="post">
                       {% csrf_token %}
                           <button class="logout" type="submit" >
@@ -96,5 +103,10 @@
       integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
       crossorigin="anonymous"
     ></script>
+  <script>
+    $(document).on('click', '.toggle-button', function() {
+        $(this).next('.comment-box').toggle();
+    });
+</script>
   </body>
 </html>

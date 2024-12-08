@@ -1,10 +1,10 @@
 {% extends "user/base.html" %}
 {% block content %}
     <main role="main" class="container main-contain">
-      <div class="row flex">
-        <div class="col-md-2 sidebar">
+      <div class="two-section row flex">
+        <div class="sidebar">
             <div class="link">
-                <a href="{% url 'user:main' %}" >
+                <a class="home" href="{% url 'user:main' %}" >
                     {% load static %}
                     <img class="icon" src="{% static 'images/home.svg' %}" alt="Home">
                     Home
@@ -25,7 +25,7 @@
                 </a>
             </div>
         </div>
-        <div class="col-md-9 mainpage">
+        <div class="mainpage">
             {% if not user.is_authenticated %}
             <div class="hero-section-not-auth">
                 <div class="left">
@@ -51,12 +51,12 @@
                     <img class="wave-hand" src="{% static 'images/waving-hand.png' %}" alt="Wave Hand">
                     </div>
                     <div class="welcome-message">
-                        <h4>Welcome back, {{user.username}}</h4>
+                        <div>Welcome back, {{user.username}}</div>
                         <p>Find answers to your technical questions and help others answer theirs.</p>
                     </div>
                 </div>
                 <div class="hello-section-right">
-                    <a class="ask-question" href="{% url 'questions:question_create' %}">Ask Questions</a>
+                    <a class="ask-question" href="{% url 'questions:question_create' %}">Ask Question</a>
                 </div>
 
             </div>
@@ -64,7 +64,7 @@
                 <div class="reputation-box">
                     <h5>Reputation</h5>
                     <h4>{{ reputation }}</h4>
-                    <p>Earn Reputation By Asking, Answering Questions</p>
+                    <p>Earn Reputation By <a href="{% url 'questions:question_create' %}">Asking</a>, <a href="{% url 'questions:question_list' %}">Answering</a> Questions</p>
                 </div>
             </div>
             <div class="interesting-post-section">
@@ -78,22 +78,32 @@
                     </div>
                     <div class="post-question">
                         <a class = "question" href="{% url 'questions:question_detail' question.id %}">{{ question.title }}</a>
-                        <p class="description">{{ question.body_clean |slice:":200"  }}</p>
+                        <div class="description">{{ question.body_clean |slice:":200"  }}</div>
                         <div class="tags">
                             {% for tag in question.tags.all %}
-                              <a class="tags-button" href="{% url 'user:register' %}">{{tag.tag.name}}</a>
+                                <a href="#" class="tags-button encoded-tag" data-tag="{{ tag.tag.name }}">{{ tag.tag.name }}</a>
                             {% endfor %}
                         </div>
                     </div>
                 </div>
                 {% endfor %}
-
-
             </div>
             {% endif %}
-
-
         </div>
       </div>
     </main>
+<script>
+    document.querySelectorAll('.encoded-tag').forEach(function(link) {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();  // Prevent default link behavior
+
+            // Get the tag name and encode it
+            const tagName = encodeURIComponent('[' + link.getAttribute('data-tag') + ']');
+            const url = `http://localhost:8000/search/?query=${tagName}`;
+
+            // Redirect to the encoded URL
+            window.location.href = url;
+        });
+    });
+</script>
 {% endblock content %}
