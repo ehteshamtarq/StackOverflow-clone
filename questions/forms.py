@@ -19,7 +19,6 @@ class AnswerForm(forms.ModelForm):
         model = Answer
         fields = ['body']
 
-
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
@@ -29,3 +28,8 @@ class QuestionEditDeleteForm(forms.ModelForm):
     class Meta:
         model = Question
         fields = ['title', 'body']
+
+class TagForm(forms.ModelForm):
+    class Meta:
+        model = Tag
+        fields = ['name', 'description']

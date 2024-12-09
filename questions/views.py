@@ -3,7 +3,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Question, Tag, QuestionTag, Answer, Comment, Vote
 from django.urls import reverse_lazy
-from .forms import AnswerForm, CommentForm, QuestionForm, QuestionEditDeleteForm
+from .forms import AnswerForm, CommentForm, QuestionForm, QuestionEditDeleteForm, TagForm
 from django.shortcuts import redirect, get_object_or_404,render
 from django.http import JsonResponse,HttpResponseForbidden
 from django.views import View
@@ -314,3 +314,24 @@ class DeleteCommentView(View):
         context = super().get_context_data(**kwargs)
         context['user_profile'] = get_object_or_404(Profile, user=self.request.user)
         return context
+
+class TagCreateView(CreateView):
+    model = Tag
+    form_class = TagForm
+    template_name = 'tags/tag_form.html'
+    success_url = reverse_lazy('questions:tag_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['form'] = self.get_form()
+        return context
+
+    def form_valid(self, form):
+        tag = form.save(commit=False)
+        tag.save()
+
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        return super().form_invalid(form)

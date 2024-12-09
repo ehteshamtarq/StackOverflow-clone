@@ -96,7 +96,11 @@ def search_view(request):
             questions = questions.filter(
                 Q(title__icontains=query) | Q(body__icontains=query)).distinct()
 
-    user_profile = request.user.profile
+    if request.user.is_authenticated:
+        user_profile = request.user.profile
+
+    else:
+        user_profile = None
 
     for question in questions:
         question.body_clean = markdown2.markdown(question.body)

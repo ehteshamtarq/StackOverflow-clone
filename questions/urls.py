@@ -16,4 +16,6 @@ urlpatterns = [
     path('answer/<int:pk>/edit/', views.EditAnswerView.as_view(), name='edit_answer'),
     path('answer/<int:pk>/delete/', views.DeleteAnswerView.as_view(), name='delete_answer'),
     path('comment/<int:pk>/delete/', views.DeleteCommentView.as_view(), name='delete_comment'),
+    path('tags/new/', views.TagCreateView.as_view(), name='tag_create'),
+
 ]
