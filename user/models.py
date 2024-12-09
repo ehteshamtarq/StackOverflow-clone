@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from PIL import Image
+from io import BytesIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
+
 
 
 class Profile(models.Model):
@@ -14,10 +17,11 @@ class Profile(models.Model):
         return f'{self.user.username} Profile'
 
     def save(self, *args, **kwargs):
+        if self.image:
+            img = Image.open(self.image)
+            img = img.convert('RGB')  # or any processing you need
+            img_io = BytesIO()
+            img.save(img_io, 'JPEG')
+            img_io.seek(0)
+            self.image = InMemoryUploadedFile(img_io, None, self.image.name, 'image/jpeg', img_io.tell(), None)
         super().save(*args, **kwargs)
-
-        img = Image.open(self.image.path)
-        if img.height > 256 or img.width > 256:
-            output_size = (256, 256)
-            img.thumbnail(output_size)
-            img.save(self.image.path)
