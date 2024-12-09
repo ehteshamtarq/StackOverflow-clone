@@ -71,13 +71,13 @@
                     </div>
                     <div class="username">
                         <div class="username-image">
-                            <a class="profile"  href="{% url 'user:profile' username%}">
+                            <a class="profile"  href="{% url 'user:profile' question.user.username%}">
                                 <div class="user-image">
                                     {% load static %}
                                         {% if user_profile.image %}
                                         <img class="profile-image" src="{{ question_owner_profile.image.url }}" alt="{{ user_profile.user.username }}'s profile picture">
                                             {% else %}
-                                        <img class="profile-image" src="{% static 'images/default-profile.png' %}" alt="Default profile picture">
+                                        <img class="profile-image" src="{{ MEDIA_URL }}default.png" alt="Default profile picture">
                                     {% endif %}
                                 </div>
                                 <div class="username-reputation">
@@ -93,7 +93,7 @@
                     <hr>
                     {% for comment in comments %}
                     <div class="comment-body">
-                        <p>{{ comment.body }} - <span><a class="comment-username"  href="{% url 'user:profile' username%}">{{ comment.user.username }}</a></span>
+                        <p>{{ comment.body }} - <span><a class="comment-username"  href="{% url 'user:profile' comment.user.username%}">{{ comment.user.username }}</a></span>
                         {% if request.user == comment.user %}
                         <a class="delete-comment" href="{% url 'questions:delete_comment' comment.pk %}">Delete</a>
                         {% endif %}
@@ -149,7 +149,7 @@
                                         {% if user_profile.image %}
                                         <img class="profile-image" src="{{ answer.profile.image.url }}" alt="{{ answer.user.username }}'s profile picture">
                                             {% else %}
-                                        <img class="profile-image" src="{% static 'images/default-profile.png' %}" alt="Default profile picture">
+                                        <img class="profile-image" src="{{ MEDIA_URL }}default.png" alt="Default profile picture">
                                     {% endif %}
                                 </div>
                                 <div class="username-reputation">

@@ -34,7 +34,8 @@ class QuestionListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['total_questions'] = Question.objects.count()
-        context['user_profile'] = get_object_or_404(Profile, user=self.request.user)
+        if self.request.user.is_authenticated:
+            context['user_profile'] = get_object_or_404(Profile, user=self.request.user)
         return context
 
 class QuestionDetailView(DetailView):
@@ -52,7 +53,8 @@ class QuestionDetailView(DetailView):
         context['username'] = self.object.user.username
         context['answer_count'] = self.object.answers.count()
         context['vote_count'] = self.object.upvotes - self.object.downvotes
-        context['user_profile'] = get_object_or_404(Profile, user=self.request.user)
+        if self.request.user.is_authenticated:
+            context['user_profile'] = get_object_or_404(Profile, user=self.request.user)
         context['question_owner'] = self.object.user
         context['question_owner_profile'] = get_object_or_404(Profile, user=self.object.user)
         context['reputation'] = calculate_reputation(context['question_owner'])
@@ -126,7 +128,8 @@ class QuestionCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Get the user's profile (adjust based on your setup)
-        context['user_profile'] = get_object_or_404(Profile, user=self.request.user)
+        if self.request.user.is_authenticated:
+            context['user_profile'] = get_object_or_404(Profile, user=self.request.user)
         context['form'] = self.get_form()
         return context
 
@@ -157,7 +160,8 @@ class TagListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['user_profile'] = get_object_or_404(Profile, user=self.request.user)
+        if self.request.user.is_authenticated:
+            context['user_profile'] = get_object_or_404(Profile, user=self.request.user)
         return context
 
 class VoteQuestionView(View):
