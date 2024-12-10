@@ -109,7 +109,6 @@ nav {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
 }
 
 .small-logo {
@@ -117,16 +116,9 @@ nav {
   padding-top: 20px;
 }
 
-.login-contain, {
-  height: 80vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
 .login-contain,
  {
+ margin-top: 50px !important;
   width: 400px;
 }
 
@@ -995,3 +987,6 @@ p a{
     margin: 0;
 }
 
+.form-control{
+    width: auto !important;
+}
