@@ -20,6 +20,8 @@ ALLOWED_HOSTS = ['stackoverflow-clone-65j7.onrender.com', '*']
 
 
 INSTALLED_APPS = [
+    'user',
+    'questions',
     "crispy_forms",
     "crispy_bootstrap4",
     'django.contrib.admin',
@@ -28,8 +30,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'user',
-    'questions',
 ]
 
 MIDDLEWARE = [
@@ -66,20 +66,20 @@ WSGI_APPLICATION = 'stackoverflow.wsgi.application'
 
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-
 # DATABASES = {
-#     'default': dj_database_url.config(
-#         default='postgresql://stackoverflow_qtyy_user:ZnxnpgaCjENjMfPBDDR4W3Ce0Mh0LpBx@dpg-ct59qj88fa8c73btfv30-a.oregon-postgres.render.com/stackoverflow_qtyy',
-#         conn_max_age=600
-#     )
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
 # }
+
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default='postgresql://stackoverflow_qtyy_user:ZnxnpgaCjENjMfPBDDR4W3Ce0Mh0LpBx@dpg-ct59qj88fa8c73btfv30-a.oregon-postgres.render.com/stackoverflow_qtyy',
+        conn_max_age=600
+    )
+}
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -111,11 +111,6 @@ STATIC_URL = 'static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 MEDIA_URL = '/media/'
 
-#
-# if not DEBUG:
-#     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-#     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -146,3 +141,11 @@ STORAGES = {
         "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
     },
 }
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = str(os.getenv('EMAIL_HOST_USER'))
+EMAIL_HOST_PASSWORD = str(os.getenv('EMAIL_HOST_PASSWORD'))

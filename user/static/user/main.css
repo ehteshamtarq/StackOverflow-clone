@@ -117,8 +117,7 @@ nav {
   padding-top: 20px;
 }
 
-.login-contain,
-.register-contain {
+.login-contain, {
   height: 80vh;
   display: flex;
   flex-direction: column;
@@ -127,7 +126,7 @@ nav {
 }
 
 .login-contain,
-form {
+ {
   width: 400px;
 }
 
@@ -138,15 +137,6 @@ form {
   align-items: start;
 }
 
-.login-button,
-.register-button {
-  padding: 10px;
-  color: white;
-  background-color: hsl(210, 77%, 46%);
-  width: 100%;
-  border: none;
-  border-radius: 4px;
-}
 
 .register-contain,
 .main-contain {
@@ -1004,3 +994,4 @@ p a{
     padding: 0;
     margin: 0;
 }
+
