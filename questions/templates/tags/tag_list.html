@@ -5,7 +5,7 @@
       <div class="two-section row flex">
         <div class="sidebar">
             <div class="link">
-                <a href="{% url 'user:main' %}" >
+                <a href="{% url 'questions:questions_list' %}" >
                     {% load static %}
                     <img class="icon" src="{% static 'images/home.svg' %}" alt="Home">
                     Home
@@ -19,7 +19,7 @@
                 </a>
             </div>
             <div class="link">
-                <a href="{% url 'questions:question_list' %}" >
+                <a href="{% url 'questions:tag_list' %}" >
                     {% load static %}
                     <img class="icon" src="{% static 'images/tags.svg' %}" alt="Tags">
                     Tags

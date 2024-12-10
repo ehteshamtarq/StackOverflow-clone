@@ -30,7 +30,7 @@
     <div class="col-md-9 mainpage">
         <div class="heading-title">
             <h2 class="heading"><a href="{% url 'questions:question_detail' pk=question.pk %}">{{ question.title }}</a></h2>
-            <div><a class="ask-question" href="{% url 'questions:question_create' %}">Ask Questions</a></div>
+            <div><a class="ask-question" href="{% url 'questions:question_create' %}">Ask Question</a></div>
         </div>
         <div class="votes-askedWhen">
             <p><span class="field-name">Asked</span> <span class="field-value">{{ question.created_at|date:"d-m-Y" }}</span></p>
@@ -584,6 +584,16 @@ p a{
         color: gray;
         margin-left: 3px;
     }
+
+    label{
+    display: none;
+    }
+
+    .answer-section-left form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
 </style>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
