@@ -4,7 +4,6 @@ from .forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
 from .forms import UserUpdateForm, ProfileUpdateForm
 from django.db.models import Count
-import markdown2
 from questions.models import Question, Answer, Comment
 from django.http import Http404, HttpResponseForbidden
 from django.contrib.auth.models import User
@@ -44,7 +43,7 @@ def main(request):
         user_profile = None
 
     for question in latest_questions:
-        question.body_clean = markdown2.markdown(question.body)
+        question.body_clean = question.body
 
     return render(request, 'user/main.html', {'latest_questions': latest_questions, 'reputation': reputation, 'user_profile': user_profile})
 
@@ -103,7 +102,7 @@ def search_view(request):
         user_profile = None
 
     for question in questions:
-        question.body_clean = markdown2.markdown(question.body)
+        question.body_clean = question.body
 
     return render(request, 'user/search_results.html', {'questions': questions, 'query': query, 'user_profile': user_profile})
 

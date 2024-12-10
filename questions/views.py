@@ -1,4 +1,3 @@
-import markdown2
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Question, Tag, QuestionTag, Answer, Comment, Vote
@@ -27,7 +26,7 @@ class QuestionListView(ListView):
             .order_by('-created_at')
         )
         for question in queryset:
-            question.body_clean = markdown2.markdown(question.body)
+            question.body_clean = question.body
 
         return queryset
 
