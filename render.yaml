@@ -1,4 +1,4 @@
-databases:
+  databases:
   - name: stackoverflowdb
     plan: free
     databaseName: stackoverflow_qtyy

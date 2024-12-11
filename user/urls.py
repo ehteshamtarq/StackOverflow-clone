@@ -13,5 +13,5 @@ urlpatterns = [
     path('profile/<str:username>/', views.profile, name='profile'),
     path('', views.main, name='main'),
     path('profile/<str:username>/edit/', views.edit_profile, name='edit_profile'),
-    path('search/', views.search_view, name='search_view'),
+    path('search/', views.  search_view, name='search_view'),
 ]

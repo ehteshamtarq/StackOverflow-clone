@@ -10,7 +10,8 @@ from django.contrib.auth.models import User
 from .models import Profile
 from .services import calculate_reputation
 from django.db.models import Q
-
+from .documents import QuestionDocument
+from opensearch_dsl import Q
 
 def register(request):
     if request.method == 'POST':
@@ -82,29 +83,60 @@ def profile(request, username=None):
 
 def search_view(request):
     query = request.GET.get('query', '')
-    questions = Question.objects.all()
+    questions = QuestionDocument.search()  # Initiate the search
 
     if query:
         if query.startswith('[') and query.endswith(']'):
             tag_name = query.strip('[]')
-            questions = Question.objects.filter(tags__tag__name__icontains=tag_name)
+            q = Q("term", tags=tag_name)
         elif query.startswith('"') and query.endswith('"'):
             phrase = query.strip('"')
-            questions = questions.filter(Q(title__icontains=phrase) | Q(body__icontains=phrase))
+            q = Q("match_phrase", title=phrase) | Q("match_phrase", content=phrase)
         else:
-            questions = questions.filter(
-                Q(title__icontains=query) | Q(body__icontains=query)).distinct()
+            q = Q("multi_match", query=query, fields=["title", "content", "tags"])
+
+        questions = questions.query(q)
+
+    results = questions.execute()
+
+    question_ids = [hit.meta.id for hit in results]
+
+    questions_qs = Question.objects.filter(id__in=question_ids).annotate(
+        answer_count=Count('answers'),
+    )
+
+    questions_dict = {question.id: question for question in questions_qs}
+
+    questions = []
+    for hit in results:
+        question_data = {
+            'id': hit.meta.id,
+            'title': hit.title,
+            'body_clean': hit.body,
+            'answer_count': 0,
+            'views': 0,
+            'tags': []
+        }
+
+        question_obj = questions_dict.get(hit.meta.id)
+
+        if question_obj:
+            question_data['answer_count'] = question_obj.answer_count
+            question_data['views'] = question_obj.views
+            question_data['tags'] = [tag.tag.name for tag in question_obj.tags.all()] if question_obj.tags.exists() else []
+
+        questions.append(question_data)
 
     if request.user.is_authenticated:
         user_profile = request.user.profile
-
     else:
         user_profile = None
 
-    for question in questions:
-        question.body_clean = question.body
-
-    return render(request, 'user/search_results.html', {'questions': questions, 'query': query, 'user_profile': user_profile})
+    return render(request, 'user/search_results.html', {
+        'questions': questions,
+        'query': query,
+        'user_profile': user_profile
+    })
 
 @login_required
 def edit_profile(request, username):

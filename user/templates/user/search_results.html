@@ -41,8 +41,8 @@
                         <a class = "question" href="{% url 'questions:question_detail' question.id %}">{{ question.title }}</a>
                         <div class="description">{{ question.body_clean |slice:":200"  }}</div>
                         <div class="tags">
-                            {% for tag in question.tags.all %}
-                                <a href="#" class="tags-button encoded-tag" data-tag="{{ tag.tag.name }}">{{ tag.tag.name }}</a>
+                            {% for tag in question.tags %}
+                                <a href="#" class="tags-button encoded-tag" data-tag="{{ tag }}">{{ tag }}</a>
                             {% endfor %}
                         </div>
                     </div>
