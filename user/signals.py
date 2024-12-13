@@ -15,7 +15,6 @@ client = OpenSearch(
 )
 
 
-
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
     if created:
@@ -51,7 +50,6 @@ def index_question(sender, instance, created, **kwargs):
 
 @receiver(post_delete, sender=Question)
 def delete_question(sender, instance, **kwargs):
-
     try:
         client.delete(index="questions_index", id=instance.id)
         print(f"Successfully deleted question: {instance.title} from OpenSearch")

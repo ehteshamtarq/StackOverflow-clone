@@ -158,10 +158,11 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = str(os.getenv('EMAIL_HOST_USER'))
 EMAIL_HOST_PASSWORD = str(os.getenv('EMAIL_HOST_PASSWORD'))
 
+HOST = os.getenv('HOST')
 
 OPENSEARCH_DSL = {
     'default': {
-        'hosts': ['https://ehtesham:Subiyaparween%40786@search-mystackoverflowclone-nnnvpa23d65es455p776gyfdpm.ap-south-1.es.amazonaws.com'],
+        'hosts': [HOST],
         'use_ssl': True,
         'verify_certs': True,
         'timeout': 30,

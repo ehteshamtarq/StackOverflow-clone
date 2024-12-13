@@ -5,7 +5,7 @@
       <div class="two-section row flex">
         <div class="sidebar">
             <div class="link">
-                <a href="{% url 'questions:questions_list' %}" >
+                <a href="{% url 'questions:question_list' %}" >
                     {% load static %}
                     <img class="icon" src="{% static 'images/home.svg' %}" alt="Home">
                     Home
@@ -46,6 +46,10 @@
 <style>
     .two-section{
         margin-top: 40px;
+    }
+    .link{
+        margin-top: 0px;
+        margin-bottom:  10px;
     }
 </style>
 <script>

@@ -100,7 +100,6 @@
                         </p>
                     </div>
 
-
                     <hr>
                     {% empty %}
                    {% endfor %}
@@ -162,7 +161,6 @@
                     </div>
                 </div>
 
-
                 <button class="comment-btn toggle-button">Add Comment</button>
                 <div class="comment-box mt-3" style="display: none;">
                     <form method="post">
@@ -175,16 +173,20 @@
                 </div>
 
                 {% if answer.comments %}
-                <div class="comment-section">
-                <hr>
-                {% for comment in answer.comments %}
-                    <div class="comment-body"><p>{{ comment.body }} - {{ comment.user.username }}</p></div>
-                    {% if request.user == comment.user %}
-                      <a href="{% url 'questions:delete_comment' comment.pk %}">Delete</a>
-                    {% endif %}
+                    <div class="comment-section">
                     <hr>
-                {% empty %}
-                {% endfor %}
+                    {% for comment in answer.comments %}
+                    <div class="comment-body">
+                        <p>{{ comment.body }} - <span><a class="comment-username"  href="{% url 'user:profile' comment.user.username%}">{{ comment.user.username }}</a></span>
+                        {% if request.user == comment.user %}
+                        <a class="delete-comment" href="{% url 'questions:delete_comment' comment.pk %}">Delete</a>
+                        {% endif %}
+                        </p>
+                    </div>
+
+                    <hr>
+                    {% empty %}
+                   {% endfor %}
                 </div>
                 {% endif %}
 
