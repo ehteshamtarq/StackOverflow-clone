@@ -232,6 +232,10 @@
         border-radius: 5px;
     }
 
+    textarea{
+    width: 500px;
+    }
+
 .heading-title {
   width: 100%;
   display: flex;
@@ -256,6 +260,10 @@
 
 #markdown-content {
   padding: 10px;
+}
+
+#preview-section{
+    width: 100%;
 }
 
 .inline-code {
@@ -419,18 +427,18 @@ textarea {
   margin-top: 30px;
   margin-bottom: 30px;
 }
-.answer-section-left {
-  width: 70%;
-}
+
 
 .answer-section-right {
-  width: 25%;
+  width: 35%;
 }
 
 .answer-section {
-  width: 130%;
+  width: 120%;
   display: flex;
   flex-direction: row;
+  gap: 100px;
+  margin-bottom: 30px;
 }
 
 .answer-count-heading {
@@ -596,6 +604,10 @@ p a{
     flex-direction: column;
     align-items: flex-start;
 }
+
+    .answer-section-left{
+    width: 500px;
+    }
 </style>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
